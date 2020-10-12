@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{969614E5-12BF-46EE-830F-7DEEDC9F982F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "Elastic\Database.csproj", "{01FCC6D3-CAA2-4AAF-A837-AB6F6D872117}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "Database\Database.csproj", "{01FCC6D3-CAA2-4AAF-A837-AB6F6D872117}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{E5BCBA4B-DE2D-4FDF-885A-2E0FF4E7EC39}"
 EndProject
