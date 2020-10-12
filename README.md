@@ -1,5 +1,5 @@
-# StarAcademy-Group1
-Graph Analysis Project.
+# Polaris - Microsoft SQL Server
+This project primarily was Star Academy [group 1](#Contributers) project. Now It's updating to use Microsoft SQL Server by Parsa Mohammadian and Mahdi HajMohammadAli for educational purpose.
 
 ## Table of contents
 - [API Documentation](#API-Documentation)
