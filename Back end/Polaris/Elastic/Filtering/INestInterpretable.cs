@@ -1,6 +1,6 @@
 using Nest;
 
-namespace Elastic.Filtering
+namespace Database.Filtering
 {
     public interface INestInterpretable
     {

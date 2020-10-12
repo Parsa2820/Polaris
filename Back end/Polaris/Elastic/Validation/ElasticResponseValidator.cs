@@ -1,7 +1,7 @@
-using Elastic.Exceptions;
+using Database.Exceptions;
 using Nest;
 
-namespace Elastic.Validation
+namespace Database.Validation
 {
     public class ElasticResponseValidator
     {

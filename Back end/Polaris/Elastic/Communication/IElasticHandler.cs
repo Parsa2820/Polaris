@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Elastic.Communication
+namespace Database.Communication
 {
     public interface IElasticHandler<TModel>
     {

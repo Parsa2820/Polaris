@@ -1,7 +1,7 @@
 using Models;
 using System.Collections.Generic;
 
-namespace Elastic.Communication
+namespace Database.Communication
 {
     public interface IEntityHandler<TModel, TType> : IElasticHandler<TModel>
     where TModel : Entity<TType>

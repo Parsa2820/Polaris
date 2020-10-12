@@ -1,8 +1,8 @@
-using Elastic.Communication.Nest;
-using Elastic.Exceptions;
+using Database.Communication.Nest;
+using Database.Exceptions;
 using Nest;
 
-namespace Elastic.Validation
+namespace Database.Validation
 {
     public class ElasticIndexValidator
     {

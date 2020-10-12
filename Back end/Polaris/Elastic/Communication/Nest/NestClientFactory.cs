@@ -1,8 +1,8 @@
-using Elastic.Exceptions;
+using Database.Exceptions;
 using Nest;
 using System;
 
-namespace Elastic.Communication.Nest
+namespace Database.Communication.Nest
 {
     public class NestClientFactory : IElasticClientFactory<IElasticClient>
     {

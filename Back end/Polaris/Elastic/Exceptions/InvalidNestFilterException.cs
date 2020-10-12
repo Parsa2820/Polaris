@@ -1,6 +1,6 @@
 using System;
 
-namespace Elastic.Exceptions
+namespace Database.Exceptions
 {
     public class InvalidNestFilterException : Exception
     {

@@ -1,4 +1,4 @@
-using Elastic.Filtering.Attributes;
+using Database.Filtering.Attributes;
 using Nest;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Elastic.Filtering.Criteria
+namespace Database.Filtering.Criteria
 {
     public abstract class NestCriteria : INestInterpretable
     {

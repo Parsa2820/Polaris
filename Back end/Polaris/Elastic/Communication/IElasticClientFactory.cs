@@ -1,4 +1,4 @@
-namespace Elastic.Communication.Nest
+namespace Database.Communication.Nest
 {
     public interface IElasticClientFactory<TElasticClient>
     {

@@ -1,6 +1,6 @@
-using Elastic.Communication;
-using Elastic.Communication.Nest;
-using Elastic.Filtering;
+using Database.Communication;
+using Database.Communication.Nest;
+using Database.Filtering;
 using Microsoft.Extensions.Configuration;
 using Models;
 using Models.Network;

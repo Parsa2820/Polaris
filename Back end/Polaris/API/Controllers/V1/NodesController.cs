@@ -1,5 +1,5 @@
 using API.Services.NodeBusiness;
-using Elastic.Exceptions;
+using Database.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 using Models.Banking;

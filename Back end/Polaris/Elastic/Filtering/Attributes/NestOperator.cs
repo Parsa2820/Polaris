@@ -1,4 +1,4 @@
-namespace Elastic.Filtering.Attributes
+namespace Database.Filtering.Attributes
 {
     public class NestOperator : System.Attribute
     {

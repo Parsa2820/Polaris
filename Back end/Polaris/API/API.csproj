@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Models\Models.csproj" />
-    <ProjectReference Include="..\Elastic\Elastic.csproj" />
+    <ProjectReference Include="..\Elastic\Database.csproj" />
     <ProjectReference Include="..\Analysis\Analysis.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,5 @@
 using API.Services.Utils;
-using Elastic.Communication;
+using Database.Communication;
 using Models;
 
 namespace API.Services.Importer

@@ -1,11 +1,11 @@
-using Elastic.Exceptions;
+using Database.Exceptions;
 using Models;
 using Nest;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Elastic.Communication.Nest
+namespace Database.Communication.Nest
 {
     public class NestEntityHandler<TModel, TType> : NestElasticHandler<TModel>, IEntityHandler<TModel, TType>
     where TModel : Entity<TType>

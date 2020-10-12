@@ -1,11 +1,11 @@
-using Elastic.Exceptions;
-using Elastic.Filtering.Criteria;
+using Database.Exceptions;
+using Database.Filtering.Criteria;
 using Nest;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Elastic.Filtering
+namespace Database.Filtering
 {
     public class NestFilter : INestInterpretable
     {

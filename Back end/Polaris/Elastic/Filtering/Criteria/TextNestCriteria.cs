@@ -1,11 +1,11 @@
-using Elastic.Exceptions;
-using Elastic.Filtering.Attributes;
+using Database.Exceptions;
+using Database.Filtering.Attributes;
 using Nest;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Elastic.Filtering.Criteria
+namespace Database.Filtering.Criteria
 {
     using OperatorToFunctionDict = Dictionary<string, Func<TextNestCriteria, string, string, QueryContainer>>;
     public class TextNestCriteria : NestCriteria

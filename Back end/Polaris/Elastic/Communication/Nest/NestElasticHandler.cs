@@ -1,5 +1,5 @@
-using Elastic.Exceptions;
-using Elastic.Validation;
+using Database.Exceptions;
+using Database.Validation;
 using Models;
 using Models.Response;
 using Nest;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Elastic.Communication.Nest
+namespace Database.Communication.Nest
 {
     public class NestElasticHandler<TModel> : IElasticHandler<TModel> where TModel : class, IModel
     {
