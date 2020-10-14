@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Database.Communication.Nest
+namespace Database.Communication.Elastic.Nest
 {
-    public class NestElasticHandler<TModel> : IElasticHandler<TModel> where TModel : class, IModel
+    public class NestElasticHandler<TModel> : IDatabaseHandler<TModel> where TModel : class, IModel
     {
         protected IElasticClient elasticClient;
 

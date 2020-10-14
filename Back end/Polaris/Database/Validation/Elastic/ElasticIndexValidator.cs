@@ -2,7 +2,7 @@ using Database.Communication.Nest;
 using Database.Exceptions;
 using Nest;
 
-namespace Database.Validation
+namespace Database.Validation.Elastic
 {
     public class ElasticIndexValidator
     {

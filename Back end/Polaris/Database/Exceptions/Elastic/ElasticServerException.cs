@@ -1,6 +1,6 @@
 using System;
 
-namespace Database.Exceptions
+namespace Database.Exceptions.Elastic
 {
     public class ElasticServerException : Exception
     {

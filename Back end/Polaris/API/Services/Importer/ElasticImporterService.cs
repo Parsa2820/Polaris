@@ -6,9 +6,9 @@ namespace API.Services.Importer
 {
     public class ElasticImporterService<TModel> : IImporterService<TModel> where TModel : class, IModel
     {
-        private readonly IElasticHandler<TModel> _handler;
+        private readonly IDatabaseHandler<TModel> _handler;
 
-        public ElasticImporterService(IElasticHandler<TModel> handler)
+        public ElasticImporterService(IDatabaseHandler<TModel> handler)
         {
             _handler = handler;
         }

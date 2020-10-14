@@ -2,7 +2,7 @@ using Database.Exceptions;
 using Nest;
 using System;
 
-namespace Database.Communication.Nest
+namespace Database.Communication.Elastic.Nest
 {
     public class NestClientFactory : IElasticClientFactory<IElasticClient>
     {

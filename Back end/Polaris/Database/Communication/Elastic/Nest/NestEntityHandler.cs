@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Database.Communication.Nest
+namespace Database.Communication.Elastic.Nest
 {
     public class NestEntityHandler<TModel, TType> : NestElasticHandler<TModel>, IEntityHandler<TModel, TType>
     where TModel : Entity<TType>

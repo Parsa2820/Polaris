@@ -35,8 +35,8 @@ namespace API
             services.AddSingleton<INodeService<BankAccount, string>, NodeService<BankAccount, string>>();
             services.AddSingleton<IEdgeService<Transaction, string, string>, EdgeService<Transaction, string, string>>();
             services.AddSingleton<IGraphService<string, BankAccount, string, Transaction>, GraphService<string, BankAccount, string, Transaction>>();
-            services.AddSingleton<IElasticHandler<BankAccount>, NestElasticHandler<BankAccount>>();
-            services.AddSingleton<IElasticHandler<Transaction>, NestElasticHandler<Transaction>>();
+            services.AddSingleton<IDatabaseHandler<BankAccount>, NestElasticHandler<BankAccount>>();
+            services.AddSingleton<IDatabaseHandler<Transaction>, NestElasticHandler<Transaction>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
