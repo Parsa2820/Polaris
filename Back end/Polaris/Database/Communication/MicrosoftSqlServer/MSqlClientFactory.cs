@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Database.Communication.MicrosoftSqlServer
 {
-    class MSqlClientFactory : IDatabaseClientFactory<string>
+    public class MSqlClientFactory : IDatabaseClientFactory<string>
     {
         private static MSqlClientFactory singletonInstance = new MSqlClientFactory();
         private string client = null;
