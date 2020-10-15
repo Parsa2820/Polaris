@@ -1,12 +1,12 @@
-using Database.Communication.Nest;
-using Database.Exceptions;
+using Database.Communication.Elastic.Nest;
+using Database.Exceptions.Elastic;
 using Nest;
 
 namespace Database.Validation.Elastic
 {
     public class ElasticIndexValidator
     {
-        private static IElasticClient elasticClient = NestClientFactory.GetInstance().GetElasticClient();
+        private static IElasticClient elasticClient = NestClientFactory.GetInstance().GetClient();
 
         public static void ValidateIndex(string indexName)
         {

@@ -1,5 +1,5 @@
-using Database.Exceptions;
-using Database.Validation;
+using Database.Exceptions.Elastic;
+using Database.Validation.Elastic;
 using Models;
 using Models.Response;
 using Nest;
@@ -15,7 +15,7 @@ namespace Database.Communication.Elastic.Nest
 
         public NestElasticHandler()
         {
-            elasticClient = NestClientFactory.GetInstance().GetElasticClient();
+            elasticClient = NestClientFactory.GetInstance().GetClient();
         }
 
         private void CheckIndex(string indexName, bool recreate)

@@ -1,5 +1,5 @@
 using Database.Communication;
-using Database.Communication.Nest;
+using Database.Communication.Elastic.Nest;
 using Database.Filtering;
 using Microsoft.Extensions.Configuration;
 using Models;

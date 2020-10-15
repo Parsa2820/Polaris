@@ -3,7 +3,7 @@ using API.Services.GraphBusiness;
 using API.Services.Importer;
 using API.Services.NodeBusiness;
 using Database.Communication;
-using Database.Communication.Nest;
+using Database.Communication.Elastic.Nest;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

@@ -1,4 +1,4 @@
-using Database.Exceptions;
+using Database.Exceptions.Elastic;
 using Database.Filtering.Criteria;
 using Nest;
 using System.Collections.Generic;

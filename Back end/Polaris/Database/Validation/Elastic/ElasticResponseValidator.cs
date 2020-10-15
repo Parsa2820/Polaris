@@ -1,4 +1,4 @@
-using Database.Exceptions;
+using Database.Exceptions.Elastic;
 using Nest;
 
 namespace Database.Validation.Elastic

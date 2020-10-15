@@ -4,7 +4,7 @@ using System;
 
 namespace Database.Communication.Elastic.Nest
 {
-    public class NestClientFactory : IElasticClientFactory<IElasticClient>
+    public class NestClientFactory : IDatabaseClientFactory<IElasticClient>
     {
         private static NestClientFactory singletonInstance = new NestClientFactory();
         private IElasticClient client = null;
@@ -20,7 +20,7 @@ namespace Database.Communication.Elastic.Nest
             client = new ElasticClient(connectionSettings);
         }
 
-        public IElasticClient GetElasticClient()
+        public IElasticClient GetClient()
         {
             if (client == null)
             {
