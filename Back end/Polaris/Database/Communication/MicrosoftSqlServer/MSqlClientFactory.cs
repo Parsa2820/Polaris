@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
-
-namespace Database.Communication.MicrosoftSqlServer
+﻿namespace Database.Communication.MicrosoftSqlServer
 {
     public class MSqlClientFactory : IDatabaseClientFactory<string>
     {

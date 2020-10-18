@@ -18,18 +18,17 @@ namespace Database.Communication.Elastic.Nest
             elasticClient = NestClientFactory.GetInstance().GetClient();
         }
 
-        private void CheckIndex(string indexName, bool recreate)
+        public void CheckSource(string sourceName, bool recreate)
         {
             try
             {
-                ElasticIndexValidator.ValidateIndex(indexName);
+                ElasticIndexValidator.ValidateIndex(sourceName);
             }
             catch (InvalidElasticIndexException e)
             {
                 if (recreate)
                 {
-                    elasticClient.Indices.Delete(indexName);
-                    elasticClient.Indices.Create(indexName, i => i.Map<TModel>(x => x.AutoMap()));
+                    elasticClient.Indices.Create(sourceName, i => i.Map<TModel>(x => x.AutoMap()));
                     // Todo Custom mapping
                 }
                 else
@@ -39,14 +38,14 @@ namespace Database.Communication.Elastic.Nest
 
         public void Insert(TModel model, string indexName)
         {
-            CheckIndex(indexName, false);
+            CheckSource(indexName, false);
             var response = elasticClient.Index<TModel>(model, i => i.Index(indexName));
             ElasticResponseValidator.Validate(response);
         }
 
         public void BulkInsert(IEnumerable<TModel> models, string indexName)
         {
-            CheckIndex(indexName, true);
+            CheckSource(indexName, true);
             var bulk = new BulkDescriptor();
             foreach (var model in models)
             {

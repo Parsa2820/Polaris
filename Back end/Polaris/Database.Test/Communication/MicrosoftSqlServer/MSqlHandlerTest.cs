@@ -1,11 +1,7 @@
-﻿using System;
+﻿using Database.Communication.MicrosoftSqlServer;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Database.Communication.MicrosoftSqlServer;
-using Elasticsearch.Net;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Database.Test.Communication.MicrosoftSqlServer
 {
@@ -24,7 +20,22 @@ namespace Database.Test.Communication.MicrosoftSqlServer
         [Fact]
         public void InsertTest()
         {
+            MSqlClientFactory.GetInstance().CreateInitialClient("Data Source=(local);Initial Catalog=Star;Integrated Security=True;");
+            var handler = new MSqlHandler<DummyBankAccount>();
+            var accounts = handler.FetchAll("BANK_ACCOUNT");
+            handler.Insert(new DummyBankAccount() { Id = 11111, OwnerName = "Masoud" }, "BANK_ACCOUNT");
+            var newAccounts = handler.FetchAll("BANK_ACCOUNT");
+            Assert.True(accounts.Count() + 1 == newAccounts.Count());
+        }
 
+        [Fact]
+        public void BulkInsertTest()
+        {
+            MSqlClientFactory.GetInstance().CreateInitialClient("Data Source=(local);Initial Catalog=Star;Integrated Security=True;");
+            var handler = new MSqlHandler<DummyBankAccount>();
+            var list = new List<DummyBankAccount>();
+            list.Add(new DummyBankAccount() { Id = 222, OwnerName = "Shahin" });
+            handler.BulkInsert(list, "BANK_ACCOUNT");
         }
     }
 

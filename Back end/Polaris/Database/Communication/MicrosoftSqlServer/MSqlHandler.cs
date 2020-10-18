@@ -1,5 +1,6 @@
 ﻿using Dapper;
-using System;
+using Database.Exceptions.MicrosoftSqlServer;
+using Database.Validation.MicrosoftSqlServer;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -12,13 +13,40 @@ namespace Database.Communication.MicrosoftSqlServer
     {
         public void BulkInsert(IEnumerable<TModel> models, string sourceName)
         {
-            throw new NotImplementedException();
+            DataTable dataTable = new DataTable();
+            var properties = models.First().GetType().GetProperties();
+
+            foreach (var property in properties)
+                dataTable.Columns.Add(new DataColumn(property.Name, property.PropertyType));
+
+            foreach (var model in models)
+            {
+                DataRow dataRow = dataTable.NewRow();
+
+                foreach (var property in properties)
+                    dataRow[property.Name] = property.GetValue(model);
+
+                dataTable.Rows.Add(dataRow);
+            }
+
+            var connectionString = MSqlClientFactory.GetInstance().GetClient();
+
+            var connection = new SqlConnection(connectionString);
+            SqlBulkCopy sqlBulk = new SqlBulkCopy(connection);
+            sqlBulk.DestinationTableName = sourceName;
+
+            foreach (var property in properties)
+                sqlBulk.ColumnMappings.Add(property.Name, property.Name);
+
+            connection.Open();
+            sqlBulk.WriteToServer(dataTable);
+            connection.Close();
         }
 
         public IEnumerable<TModel> FetchAll(string sourceName)
         {
-            var connectionString = MSqlClientFactory.GetInstance().GetClient();
             var queryString = $"SELECT * FROM {sourceName}";
+            var connectionString = MSqlClientFactory.GetInstance().GetClient();
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
                 return connection.Query<TModel>(queryString).ToList();
@@ -27,30 +55,23 @@ namespace Database.Communication.MicrosoftSqlServer
 
         public void Insert(TModel model, string sourceName)
         {
-            var connectionString = MSqlClientFactory.GetInstance().GetClient();
-            StringBuilder names = new StringBuilder();
-            StringBuilder values = new StringBuilder();
-            names.Append("(");
-            values.Append("(");
-            var properties = model.GetType().GetProperties();
+            BulkInsert(new List<TModel> { model }, sourceName);
+        }
 
-            names.Append(properties[0].Name);
-            values.Append(properties[0].GetValue(model));
-
-            for(int i = 1; i < properties.Length; i++)
+        public void CheckSource(string sourceName, bool recreate)
+        {
+            try
             {
-                names.Append(",");
-                names.Append(properties[i].Name);
-                values.Append(",");
-                values.Append(properties[i].GetValue(model));
+                MicrosoftSqlTableValidator.ValidateTable(sourceName);
             }
-
-            names.Append(")");
-            values.Append(")");
-
-            using (IDbConnection connection = new SqlConnection(connectionString))
+            catch (InvalidSqlTableException e)
             {
-                connection.Execute($"INSERT INTO {sourceName}({names}) VALUES {values}", model);
+                if (recreate)
+                {
+                    // Todo : Create new table from TModel
+                }
+                else
+                    throw e;
             }
         }
     }
