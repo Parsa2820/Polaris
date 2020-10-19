@@ -1,5 +1,6 @@
 ﻿using Database.Exceptions;
 using Models;
+using Nest;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -26,27 +27,37 @@ namespace Database.Communication.MicrosoftSqlServer
 
             idsCondition.Length -= 4; // To remove last redundant OR and sapces around it
             var queryString = $"SELECT * FROM {sourceName} WHERE {idsCondition}";
-            var connectionString = MSqlClientFactory.GetInstance().GetClient();
-            using (IDbConnection connection = new SqlConnection(connectionString))
-            {
-                return null;
-            }
+            var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var command = new SqlCommand(queryString, connection);
+            var dataReader = command.ExecuteReader();
+            var result = new List<TModel>();
+
+            while (dataReader.Read())
+                result.Add(MapRecordToModel(dataReader));
+
+            command.Dispose();
+            dataReader.Close();
+            connection.Close();
+            return result;
         }
 
         public TModel GetEntity(TType id, string sourceName)
         {
             var queryString = $"SELECT * FROM {sourceName} WHERE Id = {id}";
-            var connectionString = MSqlClientFactory.GetInstance().GetClient();
-            using (IDbConnection connection = new SqlConnection(connectionString))
-            {
-                //var response = connection.Query<TModel>(queryString);
-                var response = new List<TModel>();
-                if (response.Any())
-                {
-                    throw new EntityNotFoundException($"Entity with id: \"{id}\" not found in table \"{sourceName}\"");
-                }
-                return response.First();
-            }
+            var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var command = new SqlCommand(queryString, connection);
+            var dataReader = command.ExecuteReader();
+
+            if (!dataReader.Read())
+                throw new EntityNotFoundException($"Entity with id: \"{id}\" not found in table \"{sourceName}\"");
+
+            var result = MapRecordToModel(dataReader);
+            command.Dispose();
+            dataReader.Close();
+            connection.Close();
+            return result;
         }
 
         public void UpdateEntity(TModel newEntity, string sourceName)
