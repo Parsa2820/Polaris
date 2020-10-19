@@ -23,7 +23,7 @@ namespace Database.Test.Communication.MicrosoftSqlServer
             MSqlClientFactory.GetInstance().CreateInitialClient("Data Source=(local);Initial Catalog=Star;Integrated Security=True;");
             var handler = new MSqlHandler<DummyBankAccount>();
             var accounts = handler.FetchAll("BANK_ACCOUNT");
-            handler.Insert(new DummyBankAccount() { Id = 11111, OwnerName = "Masoud" }, "BANK_ACCOUNT");
+            handler.Insert(new DummyBankAccount() { Id = 111111, OwnerName = "Masoud" }, "BANK_ACCOUNT");
             var newAccounts = handler.FetchAll("BANK_ACCOUNT");
             Assert.True(accounts.Count() + 1 == newAccounts.Count());
         }
@@ -34,7 +34,7 @@ namespace Database.Test.Communication.MicrosoftSqlServer
             MSqlClientFactory.GetInstance().CreateInitialClient("Data Source=(local);Initial Catalog=Star;Integrated Security=True;");
             var handler = new MSqlHandler<DummyBankAccount>();
             var list = new List<DummyBankAccount>();
-            list.Add(new DummyBankAccount() { Id = 222, OwnerName = "Shahin" });
+            list.Add(new DummyBankAccount() { Id = 2222, OwnerName = "Shahin" });
             handler.BulkInsert(list, "BANK_ACCOUNT");
         }
     }

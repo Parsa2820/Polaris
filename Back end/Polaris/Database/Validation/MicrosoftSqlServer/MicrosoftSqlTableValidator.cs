@@ -1,8 +1,6 @@
-﻿using Dapper;
-using Database.Communication.MicrosoftSqlServer;
+﻿using Database.Communication.MicrosoftSqlServer;
 using Database.Exceptions.MicrosoftSqlServer;
 using System;
-using System.Data;
 using System.Data.SqlClient;
 
 namespace Database.Validation.MicrosoftSqlServer
@@ -14,17 +12,17 @@ namespace Database.Validation.MicrosoftSqlServer
             var queryString = $"SELECT NULL FROM {sourceName}";
             var connectionString = MSqlClientFactory.GetInstance().GetClient();
 
-            using (IDbConnection connection = new SqlConnection(connectionString))
+            var connection = new SqlConnection(connectionString);
+            connection.Open();
+            try
             {
-                try
-                {
-                    connection.Execute(queryString);
-                    return;
-                }
-                catch (Exception e)
-                {
-                    throw new InvalidSqlTableException($"\"{sourceName}\" table does not exist");
-                }
+                var command = new SqlCommand(queryString, connection);
+                command.ExecuteReader();
+                return;
+            }
+            catch (Exception)
+            {
+                throw new InvalidSqlTableException($"\"{sourceName}\" table does not exist");
             }
         }
     }

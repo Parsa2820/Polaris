@@ -1,16 +1,24 @@
-﻿using Dapper;
-using Database.Exceptions.MicrosoftSqlServer;
+﻿using Database.Exceptions.MicrosoftSqlServer;
 using Database.Validation.MicrosoftSqlServer;
+using Nest;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 
 namespace Database.Communication.MicrosoftSqlServer
 {
     public class MSqlHandler<TModel> : IDatabaseHandler<TModel>
+        where TModel : new()
     {
+        protected string connectionString;
+
+        public MSqlHandler()
+        {
+            connectionString = MSqlClientFactory.GetInstance().GetClient();
+        }
+
         public void BulkInsert(IEnumerable<TModel> models, string sourceName)
         {
             DataTable dataTable = new DataTable();
@@ -29,8 +37,6 @@ namespace Database.Communication.MicrosoftSqlServer
                 dataTable.Rows.Add(dataRow);
             }
 
-            var connectionString = MSqlClientFactory.GetInstance().GetClient();
-
             var connection = new SqlConnection(connectionString);
             SqlBulkCopy sqlBulk = new SqlBulkCopy(connection);
             sqlBulk.DestinationTableName = sourceName;
@@ -46,11 +52,19 @@ namespace Database.Communication.MicrosoftSqlServer
         public IEnumerable<TModel> FetchAll(string sourceName)
         {
             var queryString = $"SELECT * FROM {sourceName}";
-            var connectionString = MSqlClientFactory.GetInstance().GetClient();
-            using (IDbConnection connection = new SqlConnection(connectionString))
-            {
-                return connection.Query<TModel>(queryString).ToList();
-            }
+            var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var command = new SqlCommand(queryString, connection);
+            var dataReader = command.ExecuteReader();
+            var result = new List<TModel>();
+
+            while (dataReader.Read())
+                result.Add(MapRecordToModel(dataReader));
+
+            command.Dispose();
+            dataReader.Close();
+            connection.Close();
+            return result;
         }
 
         public void Insert(TModel model, string sourceName)
@@ -73,6 +87,19 @@ namespace Database.Communication.MicrosoftSqlServer
                 else
                     throw e;
             }
+        }
+
+        protected TModel MapRecordToModel(IDataRecord record)
+        {
+            var result = new TModel();
+            var properties = result.GetType().GetProperties();
+
+            foreach (var propery in properties)
+            {
+                propery.SetValue(result, record.GetValue(record.GetOrdinal(propery.Name)));
+            }
+
+            return result;
         }
     }
 }
