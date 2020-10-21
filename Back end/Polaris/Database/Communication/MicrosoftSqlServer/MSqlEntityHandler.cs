@@ -1,9 +1,6 @@
 ﻿using Database.Exceptions;
 using Models;
-using Nest;
-using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -15,21 +12,33 @@ namespace Database.Communication.MicrosoftSqlServer
     {
         public void DeleteEntity(TType id, string sourceName)
         {
-            throw new NotImplementedException();
+            var querryString = $"DELETE {sourceName} WHERE Id = @Id";
+            var connection = new SqlConnection(connectionString);
+            var command = new SqlCommand(querryString, connection);
+            command.Parameters.Add("@Id", typeToSqlDbType[typeof(TType)]);
+            command.Parameters["@Id"].Value = id;
+            connection.Open();
+            command.ExecuteNonQuery();
+            command.Dispose();
+            connection.Close();
         }
 
         public IEnumerable<TModel> GetEntities(TType[] ids, string sourceName)
         {
-            StringBuilder idsCondition = new StringBuilder();
+            var idsList = ids.ToList();
+            var command = new SqlCommand();
+            var parameters = new string[idsList.Count()];
+            
+            for (int i = 0; i < idsList.Count(); i++)
+            {
+                parameters[i] = $"@Id{i + 1}";
+                command.Parameters.AddWithValue(parameters[i], idsList[i]);
+            }
 
-            foreach (var id in ids)
-                idsCondition.Append($"Id = {id} OR ");
-
-            idsCondition.Length -= 4; // To remove last redundant OR and sapces around it
-            var queryString = $"SELECT * FROM {sourceName} WHERE {idsCondition}";
+            command.CommandText = $"SELECT * FROM {sourceName} WHERE Id IN ({string.Join(", ", parameters)})";
             var connection = new SqlConnection(connectionString);
+            command.Connection = connection;
             connection.Open();
-            var command = new SqlCommand(queryString, connection);
             var dataReader = command.ExecuteReader();
             var result = new List<TModel>();
 
@@ -44,10 +53,12 @@ namespace Database.Communication.MicrosoftSqlServer
 
         public TModel GetEntity(TType id, string sourceName)
         {
-            var queryString = $"SELECT * FROM {sourceName} WHERE Id = {id}";
+            var queryString = $"SELECT * FROM {sourceName} WHERE Id = @Id";
             var connection = new SqlConnection(connectionString);
-            connection.Open();
             var command = new SqlCommand(queryString, connection);
+            command.Parameters.Add("@Id", typeToSqlDbType[typeof(TType)]);
+            command.Parameters["@Id"].Value = id;
+            connection.Open();
             var dataReader = command.ExecuteReader();
 
             if (!dataReader.Read())
@@ -62,7 +73,8 @@ namespace Database.Communication.MicrosoftSqlServer
 
         public void UpdateEntity(TModel newEntity, string sourceName)
         {
-            throw new NotImplementedException();
+            DeleteEntity(newEntity.Id, sourceName);
+            Insert(newEntity, sourceName);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Database.Exceptions.MicrosoftSqlServer;
 using Database.Validation.MicrosoftSqlServer;
-using Nest;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,11 +11,13 @@ namespace Database.Communication.MicrosoftSqlServer
     public class MSqlHandler<TModel> : IDatabaseHandler<TModel>
         where TModel : new()
     {
+        protected static Dictionary<Type, SqlDbType> typeToSqlDbType;
         protected string connectionString;
 
         public MSqlHandler()
         {
             connectionString = MSqlClientFactory.GetInstance().GetClient();
+            InitTypeToSqlDbType();
         }
 
         public void BulkInsert(IEnumerable<TModel> models, string sourceName)
@@ -46,6 +47,8 @@ namespace Database.Communication.MicrosoftSqlServer
 
             connection.Open();
             sqlBulk.WriteToServer(dataTable);
+            dataTable.Dispose();
+            sqlBulk.Close();
             connection.Close();
         }
 
@@ -100,6 +103,15 @@ namespace Database.Communication.MicrosoftSqlServer
             }
 
             return result;
+        }
+
+        private static void InitTypeToSqlDbType()
+        {
+            typeToSqlDbType = new Dictionary<Type, SqlDbType>();
+            typeToSqlDbType.Add(typeof(Int64), SqlDbType.BigInt);
+            typeToSqlDbType.Add(typeof(Int32), SqlDbType.Int); // This is also int
+            typeToSqlDbType.Add(typeof(Int16), SqlDbType.SmallInt);
+            typeToSqlDbType.Add(typeof(string), SqlDbType.VarChar);
         }
     }
 }
