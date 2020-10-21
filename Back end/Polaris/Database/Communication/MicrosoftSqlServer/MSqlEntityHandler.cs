@@ -3,11 +3,10 @@ using Models;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 
 namespace Database.Communication.MicrosoftSqlServer
 {
-    class MSqlEntityHandler<TModel, TType> : MSqlHandler<TModel>, IEntityHandler<TModel, TType>
+    public class MSqlEntityHandler<TModel, TType> : MSqlHandler<TModel>, IEntityHandler<TModel, TType>
     where TModel : Entity<TType>, new()
     {
         public void DeleteEntity(TType id, string sourceName)

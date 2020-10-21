@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using Models;
 
 namespace Database.Test.Communication.MicrosoftSqlServer
 {
@@ -23,7 +24,7 @@ namespace Database.Test.Communication.MicrosoftSqlServer
             MSqlClientFactory.GetInstance().CreateInitialClient("Data Source=(local);Initial Catalog=Star;Integrated Security=True;");
             var handler = new MSqlHandler<DummyBankAccount>();
             var accounts = handler.FetchAll("BANK_ACCOUNT");
-            handler.Insert(new DummyBankAccount() { Id = 111111, OwnerName = "Masoud" }, "BANK_ACCOUNT");
+            handler.Insert(new DummyBankAccount() { Id = 1111111, OwnerName = "Masoud" }, "BANK_ACCOUNT");
             var newAccounts = handler.FetchAll("BANK_ACCOUNT");
             Assert.True(accounts.Count() + 1 == newAccounts.Count());
         }
@@ -34,12 +35,12 @@ namespace Database.Test.Communication.MicrosoftSqlServer
             MSqlClientFactory.GetInstance().CreateInitialClient("Data Source=(local);Initial Catalog=Star;Integrated Security=True;");
             var handler = new MSqlHandler<DummyBankAccount>();
             var list = new List<DummyBankAccount>();
-            list.Add(new DummyBankAccount() { Id = 2222, OwnerName = "Shahin" });
+            list.Add(new DummyBankAccount() { Id = 22222, OwnerName = "Shahin" });
             handler.BulkInsert(list, "BANK_ACCOUNT");
         }
     }
 
-    class DummyBankAccount
+    class DummyBankAccount : Entity<int>
     {
         public int Id { get; set; }
         public string OwnerName { get; set; }

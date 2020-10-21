@@ -39,8 +39,10 @@ namespace Database.Communication.MicrosoftSqlServer
             }
 
             var connection = new SqlConnection(connectionString);
-            SqlBulkCopy sqlBulk = new SqlBulkCopy(connection);
-            sqlBulk.DestinationTableName = sourceName;
+            SqlBulkCopy sqlBulk = new SqlBulkCopy(connection)
+            {
+                DestinationTableName = sourceName
+            };
 
             foreach (var property in properties)
                 sqlBulk.ColumnMappings.Add(property.Name, property.Name);
@@ -107,11 +109,13 @@ namespace Database.Communication.MicrosoftSqlServer
 
         private static void InitTypeToSqlDbType()
         {
-            typeToSqlDbType = new Dictionary<Type, SqlDbType>();
-            typeToSqlDbType.Add(typeof(Int64), SqlDbType.BigInt);
-            typeToSqlDbType.Add(typeof(Int32), SqlDbType.Int); // This is also int
-            typeToSqlDbType.Add(typeof(Int16), SqlDbType.SmallInt);
-            typeToSqlDbType.Add(typeof(string), SqlDbType.VarChar);
+            typeToSqlDbType = new Dictionary<Type, SqlDbType>
+            {
+                { typeof(long), SqlDbType.BigInt }, // This is also Int64
+                { typeof(int), SqlDbType.Int }, // This is also Int32
+                { typeof(short), SqlDbType.SmallInt }, // This is also Int16
+                { typeof(string), SqlDbType.VarChar }
+            };
         }
     }
 }
