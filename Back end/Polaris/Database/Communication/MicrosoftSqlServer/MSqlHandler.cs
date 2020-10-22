@@ -1,5 +1,6 @@
 ﻿using Database.Exceptions.MicrosoftSqlServer;
 using Database.Validation.MicrosoftSqlServer;
+using Models.Response;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -22,6 +23,7 @@ namespace Database.Communication.MicrosoftSqlServer
 
         public void BulkInsert(IEnumerable<TModel> models, string sourceName)
         {
+            CheckSource(sourceName);
             DataTable dataTable = new DataTable();
             var properties = models.First().GetType().GetProperties();
 
@@ -77,7 +79,7 @@ namespace Database.Communication.MicrosoftSqlServer
             BulkInsert(new List<TModel> { model }, sourceName);
         }
 
-        public void CheckSource(string sourceName, bool recreate)
+        public void CheckSource(string sourceName, bool recreate = false)
         {
             try
             {
@@ -92,6 +94,11 @@ namespace Database.Communication.MicrosoftSqlServer
                 else
                     throw e;
             }
+        }
+
+        public IEnumerable<TModel> RetrieveQueryDocumentsByFilter(string[] container, string indexName, Pagination pagination = null)
+        {
+            throw new NotImplementedException();
         }
 
         protected TModel MapRecordToModel(IDataRecord record)

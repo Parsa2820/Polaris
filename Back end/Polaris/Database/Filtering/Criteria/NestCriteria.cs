@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Database.Filtering.Criteria
 {
-    public abstract class NestCriteria : INestInterpretable
+    public abstract class NestCriteria : IDbInterpretable<QueryContainer>
     {
         protected NestCriteria(string field, string @operator, string value)
         {

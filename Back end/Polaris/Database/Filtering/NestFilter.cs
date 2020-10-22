@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Database.Filtering
 {
-    public class NestFilter : INestInterpretable
+    public class NestFilter : IDbInterpretable<QueryContainer>
     {
         static readonly Regex FilterPattern = new Regex(
             @"^(?<field>\S+)\s(?<operator>\S+)\s(?<value>(\S+\s)+)$",

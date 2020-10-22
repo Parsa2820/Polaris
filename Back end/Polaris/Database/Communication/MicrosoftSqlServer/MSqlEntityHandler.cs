@@ -27,7 +27,7 @@ namespace Database.Communication.MicrosoftSqlServer
             var idsList = ids.ToList();
             var command = new SqlCommand();
             var parameters = new string[idsList.Count()];
-            
+
             for (int i = 0; i < idsList.Count(); i++)
             {
                 parameters[i] = $"@Id{i + 1}";

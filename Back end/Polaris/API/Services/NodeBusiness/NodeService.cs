@@ -54,8 +54,8 @@ namespace API.Services.NodeBusiness
             Pagination pagination = null
         )
         {
-            var data = ((NestEntityHandler<TDataModel, TTypeDataId>)_handler).RetrieveQueryDocuments(
-                new NestFilter(filter, GetModelMapping()).Interpret(),
+            var data = _handler.RetrieveQueryDocumentsByFilter(
+                filter,
                 _nodeElasticIndexName,
                 pagination
             );

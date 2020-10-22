@@ -4,12 +4,15 @@ using API.Services.Importer;
 using API.Services.NodeBusiness;
 using Database.Communication;
 using Database.Communication.Elastic.Nest;
+using Database.Communication.MicrosoftSqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Models.Banking;
+using System;
 
 namespace API
 {
@@ -28,13 +31,43 @@ namespace API
         {
             services.AddControllers();
             services.AddCors();
-            services.AddSingleton<IEntityHandler<BankAccount, string>, NestEntityHandler<BankAccount, string>>();
-            services.AddSingleton<IEntityHandler<Transaction, string>, NestEntityHandler<Transaction, string>>();
-            services.AddSingleton<IImporterService<BankAccount>, ElasticImporterService<BankAccount>>();
-            services.AddSingleton<IImporterService<Transaction>, ElasticImporterService<Transaction>>();
             services.AddSingleton<INodeService<BankAccount, string>, NodeService<BankAccount, string>>();
             services.AddSingleton<IEdgeService<Transaction, string, string>, EdgeService<Transaction, string, string>>();
             services.AddSingleton<IGraphService<string, BankAccount, string, Transaction>, GraphService<string, BankAccount, string, Transaction>>();
+            services.AddSingleton<IImporterService<BankAccount>, ElasticImporterService<BankAccount>>();
+            services.AddSingleton<IImporterService<Transaction>, ElasticImporterService<Transaction>>();
+            string db = Configuration["DbType"];
+
+            switch (db)
+            {
+                case "elastic":
+                    ConfigureElasticDependencies(services);
+                    break;
+
+                case "sql":
+                    ConfigureSqlDependencies(services);
+                    break;
+
+                default:
+                    ConfigureElasticDependencies(services);
+                    break;
+            }
+        }
+
+        private void ConfigureSqlDependencies(IServiceCollection services)
+        {
+            // Todo : use SqlAdapter for TQueryContainer instead of string
+            services.AddSingleton<IEntityHandler<BankAccount, string>, MSqlEntityHandler<BankAccount, string>>();
+            services.AddSingleton<IEntityHandler<Transaction, string>, MSqlEntityHandler<Transaction, string>>();
+            services.AddSingleton<IDatabaseHandler<BankAccount>, MSqlHandler<BankAccount>>();
+            services.AddSingleton<IDatabaseHandler<Transaction>, MSqlHandler<Transaction>>();
+
+        }
+
+        private void ConfigureElasticDependencies(IServiceCollection services)
+        {
+            services.AddSingleton<IEntityHandler<BankAccount, string>, NestEntityHandler<BankAccount, string>>();
+            services.AddSingleton<IEntityHandler<Transaction, string>, NestEntityHandler<Transaction, string>>();
             services.AddSingleton<IDatabaseHandler<BankAccount>, NestElasticHandler<BankAccount>>();
             services.AddSingleton<IDatabaseHandler<Transaction>, NestElasticHandler<Transaction>>();
         }
