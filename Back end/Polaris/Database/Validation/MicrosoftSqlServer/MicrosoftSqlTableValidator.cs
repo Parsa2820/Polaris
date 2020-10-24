@@ -12,17 +12,21 @@ namespace Database.Validation.MicrosoftSqlServer
             var queryString = $"SELECT NULL FROM {sourceName}";
             var connectionString = MSqlClientFactory.singletonInstance.GetClient();
 
-            var connection = new SqlConnection(connectionString);
-            connection.Open();
-            try
+            using (var connection = new SqlConnection(connectionString))
             {
-                var command = new SqlCommand(queryString, connection);
-                command.ExecuteReader();
-                return;
-            }
-            catch (Exception)
-            {
-                throw new InvalidSqlTableException($"\"{sourceName}\" table does not exist");
+                connection.Open();
+                try
+                {
+                    using (var command = new SqlCommand(queryString, connection))
+                    {
+                        command.ExecuteReader();
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw new InvalidSqlTableException($"\"{sourceName}\" table does not exist");
+                }
             }
         }
     }
