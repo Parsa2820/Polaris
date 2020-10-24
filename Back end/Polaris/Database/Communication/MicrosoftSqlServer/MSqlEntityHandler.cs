@@ -12,61 +12,70 @@ namespace Database.Communication.MicrosoftSqlServer
         public void DeleteEntity(TType id, string sourceName)
         {
             var querryString = $"DELETE {sourceName} WHERE Id = @Id";
-            var connection = new SqlConnection(connectionString);
-            var command = new SqlCommand(querryString, connection);
-            command.Parameters.Add("@Id", typeToSqlDbType[typeof(TType)]);
-            command.Parameters["@Id"].Value = id;
-            connection.Open();
-            command.ExecuteNonQuery();
-            command.Dispose();
-            connection.Close();
+            using (var connection = new SqlConnection(connectionString))
+            {
+                using (var command = new SqlCommand(querryString, connection))
+                {
+                    command.Parameters.Add("@Id", typeToSqlDbType[typeof(TType)]);
+                    command.Parameters["@Id"].Value = id;
+                    command.ExecuteNonQuery();
+
+                }
+            }
         }
+
 
         public IEnumerable<TModel> GetEntities(TType[] ids, string sourceName)
         {
             var idsList = ids.ToList();
-            var command = new SqlCommand();
-            var parameters = new string[idsList.Count()];
-
-            for (int i = 0; i < idsList.Count(); i++)
-            {
-                parameters[i] = $"@Id{i + 1}";
-                command.Parameters.AddWithValue(parameters[i], idsList[i]);
-            }
-
-            command.CommandText = $"SELECT * FROM {sourceName} WHERE Id IN ({string.Join(", ", parameters)})";
-            var connection = new SqlConnection(connectionString);
-            command.Connection = connection;
-            connection.Open();
-            var dataReader = command.ExecuteReader();
             var result = new List<TModel>();
 
-            while (dataReader.Read())
-                result.Add(MapRecordToModel(dataReader));
+            using (var command = new SqlCommand())
+            {
+                var parameters = new string[idsList.Count()];
 
-            command.Dispose();
-            dataReader.Close();
-            connection.Close();
+                for (int i = 0; i < idsList.Count(); i++)
+                {
+                    parameters[i] = $"@Id{i + 1}";
+                    command.Parameters.AddWithValue(parameters[i], idsList[i]);
+                }
+
+                command.CommandText = $"SELECT * FROM {sourceName} WHERE Id IN ({string.Join(", ", parameters)})";
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    command.Connection = connection;
+                    using (var dataReader = command.ExecuteReader())
+                    {
+
+                        while (dataReader.Read())
+                            result.Add(MapRecordToModel(dataReader));
+                    }
+                }
+            }
             return result;
         }
 
         public TModel GetEntity(TType id, string sourceName)
         {
+            TModel result;
             var queryString = $"SELECT * FROM {sourceName} WHERE Id = @Id";
-            var connection = new SqlConnection(connectionString);
-            var command = new SqlCommand(queryString, connection);
-            command.Parameters.Add("@Id", typeToSqlDbType[typeof(TType)]);
-            command.Parameters["@Id"].Value = id;
-            connection.Open();
-            var dataReader = command.ExecuteReader();
+            using (var connection = new SqlConnection(connectionString))
+            {
+                using (var command = new SqlCommand(queryString, connection))
+                {
+                    command.Parameters.Add("@Id", typeToSqlDbType[typeof(TType)]);
+                    command.Parameters["@Id"].Value = id;
+                    using (var dataReader = command.ExecuteReader())
+                    {
 
-            if (!dataReader.Read())
-                throw new EntityNotFoundException($"Entity with id: \"{id}\" not found in table \"{sourceName}\"");
+                        if (!dataReader.Read())
+                            throw new EntityNotFoundException($"Entity with id: \"{id}\" not found in table \"{sourceName}\"");
 
-            var result = MapRecordToModel(dataReader);
-            command.Dispose();
-            dataReader.Close();
-            connection.Close();
+                        result = MapRecordToModel(dataReader);
+                    }
+                }
+
+            }
             return result;
         }
 

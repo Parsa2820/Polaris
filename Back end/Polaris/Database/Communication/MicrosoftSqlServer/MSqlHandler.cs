@@ -17,7 +17,7 @@ namespace Database.Communication.MicrosoftSqlServer
 
         public MSqlHandler()
         {
-            connectionString = MSqlClientFactory.GetInstance().GetClient();
+            connectionString = MSqlClientFactory.singletonInstance.GetClient();
             InitTypeToSqlDbType();
         }
 
