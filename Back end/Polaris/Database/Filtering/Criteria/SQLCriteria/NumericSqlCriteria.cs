@@ -16,6 +16,10 @@ namespace Database.Filtering.Criteria.SQLCriteria
             RegexOptions.Compiled | RegexOptions.IgnoreCase
         );
 
+        // TODO: retrieve name of db table when we need using config files and make it non static
+        private readonly static string table = "";
+        private static string baseQuery = "select * where {0} {1} {2}";
+
         public NumericSqlCriteria(string field, string @operator, string value) : base(field, @operator, value)
         {
             value = value.Trim();
@@ -26,44 +30,55 @@ namespace Database.Filtering.Criteria.SQLCriteria
         [FilterOperator("gte")]
         public static string GreaterThanOrEqual(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, value, ">=");
         }
 
         [FilterOperator("gt")]
         public static string GreaterThan(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, value, ">");
+
         }
 
         [FilterOperator("lte")]
         public static string LessThanOrEqual(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, value, "<=");
+
         }
 
         [FilterOperator("lt")]
         public static string LessThan(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, value, "<");
+
         }
 
         [FilterOperator("eq")]
         public static string Equal(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, value, "=");
+
         }
 
         [FilterOperator("nq")]
         public static string NotEqual(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, value, "<>");
+
         }
 
+        // TODO: move this function to a parent class to avoid redundancy 
+        private static string BuildSqlQueryString(string field, string value, string operation)
+        {
+            return $"select * from {table} where {field} {operation} {value}";
+        }
         public override string Interpret()
         {
             if (!registry.ContainsKey(Operator))
                 throw new InvalidNestFilterException($"Operator: \"{Operator}\" is not registered in NumericCriteria");
             return registry[Operator].Invoke(null, Field, Value);
         }
+
     }
 }

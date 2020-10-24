@@ -16,6 +16,9 @@ namespace Database.Filtering.Criteria.SQLCriteria
             RegexOptions.Compiled | RegexOptions.IgnoreCase
         );
 
+        private static readonly string table = "";
+        private static readonly string likeQuery = "LIKE";
+
         public TextSqlCriteria(string field, string @operator, string value) : base(field, @operator, value)
         {
             value = value.Trim();
@@ -26,60 +29,69 @@ namespace Database.Filtering.Criteria.SQLCriteria
         [FilterOperator("eq")]
         public static string Equal(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, value, "=");
 
         }
 
         [FilterOperator("nq")]
         public static string NotEqual(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, value, "<>");
+
 
         }
 
         [FilterOperator("sw")]
         public static string StartsWith(string field, string value)
         {
-                        throw new NotImplementedException();
+            return BuildSqlQueryString(field, value + "%", likeQuery);
+
 
         }
 
         [FilterOperator("ew")]
         public static string EndsWith(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, "%" + value, likeQuery);
         }
 
         [FilterOperator("cnt")]
         public static string Contains(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, "%" + value + "%", likeQuery);
+
         }
 
         [FilterOperator("gt")]
         public static string GreaterThan(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, value, ">");
         }
 
         [FilterOperator("gte")]
         public static string GreaterThanOrEqual(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, value, ">=");
+
         }
 
         [FilterOperator("lt")]
         public static string LessThan(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, value, "<");
+
         }
 
         [FilterOperator("lte")]
         public static string LessThanOrEqual(string field, string value)
         {
-            throw new NotImplementedException();
+            return BuildSqlQueryString(field, value, "<=");
         }
 
+        private static string BuildSqlQueryString(string field, string value, string operation)
+        {
+            return $"select * from {table} where {field} {operation} {value}";
+        }
         public override string Interpret()
         {
             if (!registry.ContainsKey(Operator))
