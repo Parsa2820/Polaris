@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 
 namespace Database.Communication.MicrosoftSqlServer
 {
@@ -23,7 +24,7 @@ namespace Database.Communication.MicrosoftSqlServer
 
         public void BulkInsert(IEnumerable<TModel> models, string sourceName)
         {
-            CheckSource(sourceName);
+            CheckSource(sourceName, true);
             DataTable dataTable = new DataTable();
             var properties = models.First().GetType().GetProperties();
 
@@ -89,11 +90,27 @@ namespace Database.Communication.MicrosoftSqlServer
             {
                 if (recreate)
                 {
-                    // Todo : Create new table from TModel
+                    CreateNewTable(sourceName);
                 }
                 else
                     throw e;
             }
+        }
+
+        private void CreateNewTable(string sourceName)
+        {
+            var properties = typeof(TModel).GetProperties();
+            var columns = new StringBuilder();
+
+            foreach (var property in properties)
+                columns.AppendLine($"{property.Name} {typeToSqlDbType[property.PropertyType]},");
+
+            var connection = new SqlConnection(connectionString);
+            var command = new SqlCommand($"CREATE TABLE {sourceName} ({columns})", connection);
+            connection.Open();
+            command.ExecuteNonQuery();
+            command.Dispose();
+            connection.Close();
         }
 
         public IEnumerable<TModel> RetrieveQueryDocumentsByFilter(string[] container, string indexName, Pagination pagination = null)
@@ -121,7 +138,7 @@ namespace Database.Communication.MicrosoftSqlServer
                 { typeof(long), SqlDbType.BigInt }, // This is also Int64
                 { typeof(int), SqlDbType.Int }, // This is also Int32
                 { typeof(short), SqlDbType.SmallInt }, // This is also Int16
-                { typeof(string), SqlDbType.VarChar }
+                { typeof(string), SqlDbType.NText}
             };
         }
     }

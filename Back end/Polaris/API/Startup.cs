@@ -21,7 +21,6 @@ namespace API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            NestClientFactory.GetInstance().CreateInitialClient(Configuration["ElasticAddress"]);
         }
 
         public IConfiguration Configuration { get; }
@@ -34,22 +33,19 @@ namespace API
             services.AddSingleton<INodeService<BankAccount, string>, NodeService<BankAccount, string>>();
             services.AddSingleton<IEdgeService<Transaction, string, string>, EdgeService<Transaction, string, string>>();
             services.AddSingleton<IGraphService<string, BankAccount, string, Transaction>, GraphService<string, BankAccount, string, Transaction>>();
-            services.AddSingleton<IImporterService<BankAccount>, ElasticImporterService<BankAccount>>();
-            services.AddSingleton<IImporterService<Transaction>, ElasticImporterService<Transaction>>();
             string db = Configuration["DbType"];
 
             switch (db)
             {
-                case "elastic":
-                    ConfigureElasticDependencies(services);
-                    break;
-
                 case "sql":
                     ConfigureSqlDependencies(services);
+                    MSqlClientFactory.GetInstance().CreateInitialClient(Configuration["SqlServerConnectionString"]);
                     break;
 
                 default:
+                case "elastic":
                     ConfigureElasticDependencies(services);
+                    NestClientFactory.GetInstance().CreateInitialClient(Configuration["ElasticAddress"]);
                     break;
             }
         }
@@ -57,15 +53,18 @@ namespace API
         private void ConfigureSqlDependencies(IServiceCollection services)
         {
             // Todo : use SqlAdapter for TQueryContainer instead of string
+            services.AddSingleton<IImporterService<BankAccount>, SqlServerImporterService<BankAccount>>();
+            services.AddSingleton<IImporterService<Transaction>, SqlServerImporterService<Transaction>>();
             services.AddSingleton<IEntityHandler<BankAccount, string>, MSqlEntityHandler<BankAccount, string>>();
             services.AddSingleton<IEntityHandler<Transaction, string>, MSqlEntityHandler<Transaction, string>>();
             services.AddSingleton<IDatabaseHandler<BankAccount>, MSqlHandler<BankAccount>>();
             services.AddSingleton<IDatabaseHandler<Transaction>, MSqlHandler<Transaction>>();
-
         }
 
         private void ConfigureElasticDependencies(IServiceCollection services)
         {
+            services.AddSingleton<IImporterService<BankAccount>, ElasticImporterService<BankAccount>>();
+            services.AddSingleton<IImporterService<Transaction>, ElasticImporterService<Transaction>>();
             services.AddSingleton<IEntityHandler<BankAccount, string>, NestEntityHandler<BankAccount, string>>();
             services.AddSingleton<IEntityHandler<Transaction, string>, NestEntityHandler<Transaction, string>>();
             services.AddSingleton<IDatabaseHandler<BankAccount>, NestElasticHandler<BankAccount>>();
