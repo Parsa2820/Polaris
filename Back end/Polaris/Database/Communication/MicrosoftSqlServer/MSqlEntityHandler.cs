@@ -18,6 +18,7 @@ namespace Database.Communication.MicrosoftSqlServer
                 {
                     command.Parameters.Add("@Id", typeToSqlDbType[typeof(TType)]);
                     command.Parameters["@Id"].Value = id;
+                    connection.Open();
                     command.ExecuteNonQuery();
 
                 }
@@ -44,6 +45,7 @@ namespace Database.Communication.MicrosoftSqlServer
                 using (var connection = new SqlConnection(connectionString))
                 {
                     command.Connection = connection;
+                    connection.Open();
                     using (var dataReader = command.ExecuteReader())
                     {
 
@@ -65,6 +67,7 @@ namespace Database.Communication.MicrosoftSqlServer
                 {
                     command.Parameters.Add("@Id", typeToSqlDbType[typeof(TType)]);
                     command.Parameters["@Id"].Value = id;
+                    connection.Open();
                     using (var dataReader = command.ExecuteReader())
                     {
 
