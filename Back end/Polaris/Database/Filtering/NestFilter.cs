@@ -14,13 +14,13 @@ namespace Database.Filtering
             RegexOptions.Compiled | RegexOptions.IgnoreCase
         );
 
-        private List<NestCriteria> criterias;
+        private List<Criteria<QueryContainer>> criterias;
         private Dictionary<string, string> mapping;
 
         public NestFilter(string[] filterQueries, Dictionary<string, string> mapping)
         {
             this.mapping = mapping;
-            criterias = new List<NestCriteria>();
+            criterias = new List<Criteria<QueryContainer>>();
             BuildCriterias(filterQueries);
         }
 
@@ -38,7 +38,7 @@ namespace Database.Filtering
                 criterias.Add(BuildCriteria(query));
         }
 
-        private NestCriteria BuildCriteria(string filterQuery)
+        private Criteria<QueryContainer> BuildCriteria(string filterQuery)
         {
             var match = FilterPattern.Match(filterQuery.Trim() + " ");
             var selectedField = match.Groups["field"].Value;

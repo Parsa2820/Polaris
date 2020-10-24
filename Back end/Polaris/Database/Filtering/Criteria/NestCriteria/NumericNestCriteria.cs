@@ -9,7 +9,7 @@ namespace Database.Filtering.Criteria
 {
     using OperatorToFunctionDict = Dictionary<string, Func<NumericNestCriteria, string, string, QueryContainer>>;
 
-    public class NumericNestCriteria : NestCriteria
+    public class NumericNestCriteria : Criteria<QueryContainer>
     {
         private static OperatorToFunctionDict registry = GetRegistry<NumericNestCriteria>();
         protected static readonly Regex ValuePattern = new Regex(
@@ -24,7 +24,7 @@ namespace Database.Filtering.Criteria
                 throw new InvalidNestFilterException($"\"{value}\" is invalid for NumericCriteria");
         }
 
-        [NestOperator("gte")]
+        [FilterOperator("gte")]
         public static QueryContainer GreaterThanOrEqual(string field, string value)
         {
             var query = new NumericRangeQuery
@@ -35,7 +35,7 @@ namespace Database.Filtering.Criteria
             return query;
         }
 
-        [NestOperator("gt")]
+        [FilterOperator("gt")]
         public static QueryContainer GreaterThan(string field, string value)
         {
             var query = new NumericRangeQuery
@@ -46,7 +46,7 @@ namespace Database.Filtering.Criteria
             return query;
         }
 
-        [NestOperator("lte")]
+        [FilterOperator("lte")]
         public static QueryContainer LessThanOrEqual(string field, string value)
         {
             var query = new NumericRangeQuery
@@ -57,7 +57,7 @@ namespace Database.Filtering.Criteria
             return query;
         }
 
-        [NestOperator("lt")]
+        [FilterOperator("lt")]
         public static QueryContainer LessThan(string field, string value)
         {
             var query = new NumericRangeQuery
@@ -68,7 +68,7 @@ namespace Database.Filtering.Criteria
             return query;
         }
 
-        [NestOperator("eq")]
+        [FilterOperator("eq")]
         public static QueryContainer Equal(string field, string value)
         {
             var query = new MatchQuery
@@ -79,7 +79,7 @@ namespace Database.Filtering.Criteria
             return query;
         }
 
-        [NestOperator("nq")]
+        [FilterOperator("nq")]
         public static QueryContainer NotEqual(string field, string value)
         {
             var query = new BoolQuery
