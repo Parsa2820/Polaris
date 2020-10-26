@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 
 namespace Database.Communication.MicrosoftSqlServer
 {
@@ -13,12 +14,14 @@ namespace Database.Communication.MicrosoftSqlServer
         where TModel : new()
     {
         protected static Dictionary<Type, SqlDbType> typeToSqlDbType;
+        protected static string tableColumns;
         protected string connectionString;
 
         public MSqlHandler()
         {
-            connectionString = MSqlClientFactory.singletonInstance.GetClient();
+            connectionString = MSqlClientFactory.Instance.GetClient();
             InitTypeToSqlDbType();
+            InitTableColumns();
         }
 
         public void BulkInsert(IEnumerable<TModel> models, string sourceName)
@@ -59,21 +62,28 @@ namespace Database.Communication.MicrosoftSqlServer
 
         public IEnumerable<TModel> FetchAll(string sourceName)
         {
+            var queryString = $"SELECT {tableColumns} FROM {sourceName}";
+
+            using (var command = new SqlCommand(queryString))
+                return FetchByCommand(command);
+        }
+
+        protected List<TModel> FetchByCommand(SqlCommand command)
+        {
             var result = new List<TModel>();
-            var queryString = $"SELECT * FROM {sourceName}";
+
             using (var connection = new SqlConnection(connectionString))
             {
+                command.Connection = connection;
                 connection.Open();
-                using (var command = new SqlCommand(queryString, connection))
-                {
-                    using (var dataReader = command.ExecuteReader())
-                    {
 
-                        while (dataReader.Read())
-                            result.Add(MapRecordToModel(dataReader));
-                    }
+                using (var dataReader = command.ExecuteReader())
+                {
+                    while (dataReader.Read())
+                        result.Add(MapRecordToModel(dataReader));
                 }
             }
+
             return result;
         }
 
@@ -126,6 +136,21 @@ namespace Database.Communication.MicrosoftSqlServer
                 { typeof(short), SqlDbType.SmallInt }, // This is also Int16
                 { typeof(string), SqlDbType.VarChar }
             };
+        }
+
+        private void InitTableColumns()
+        {
+            var properties = typeof(TModel).GetProperties();
+            var result = new StringBuilder();
+
+            foreach (var property in properties)
+            {
+                result.Append(property.Name);
+                result.Append(", ");
+            }
+
+            result.Length -= 2; // To remove redundant ', ' at the end of result
+            tableColumns = result.ToString();
         }
     }
 }

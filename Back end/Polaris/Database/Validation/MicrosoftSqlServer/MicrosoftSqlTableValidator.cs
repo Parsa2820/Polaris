@@ -10,7 +10,7 @@ namespace Database.Validation.MicrosoftSqlServer
         public static void ValidateTable(string sourceName)
         {
             var queryString = $"SELECT NULL FROM {sourceName}";
-            var connectionString = MSqlClientFactory.singletonInstance.GetClient();
+            var connectionString = MSqlClientFactory.Instance.GetClient();
 
             using (var connection = new SqlConnection(connectionString))
             {

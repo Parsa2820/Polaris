@@ -13,9 +13,9 @@ namespace Database.Communication.Elastic.Nest
         {
         }
 
-        public void CreateInitialClient(string address)
+        public void CreateInitialClient(string dbDescription)
         {
-            var uri = new Uri(address);
+            var uri = new Uri(dbDescription);
             var connectionSettings = new ConnectionSettings(uri);
             client = new ElasticClient(connectionSettings);
         }

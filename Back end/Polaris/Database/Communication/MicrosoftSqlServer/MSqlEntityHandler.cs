@@ -29,7 +29,6 @@ namespace Database.Communication.MicrosoftSqlServer
         public IEnumerable<TModel> GetEntities(TType[] ids, string sourceName)
         {
             var idsList = ids.ToList();
-            var result = new List<TModel>();
 
             using (var command = new SqlCommand())
             {
@@ -41,45 +40,20 @@ namespace Database.Communication.MicrosoftSqlServer
                     command.Parameters.AddWithValue(parameters[i], idsList[i]);
                 }
 
-                command.CommandText = $"SELECT * FROM {sourceName} WHERE Id IN ({string.Join(", ", parameters)})";
-                using (var connection = new SqlConnection(connectionString))
-                {
-                    command.Connection = connection;
-                    connection.Open();
-                    using (var dataReader = command.ExecuteReader())
-                    {
+                command.CommandText = $"SELECT {tableColumns} FROM {sourceName} WHERE Id IN ({string.Join(", ", parameters)})";
 
-                        while (dataReader.Read())
-                            result.Add(MapRecordToModel(dataReader));
-                    }
-                }
+                return FetchByCommand(command);
             }
-            return result;
         }
 
         public TModel GetEntity(TType id, string sourceName)
         {
-            TModel result;
-            var queryString = $"SELECT * FROM {sourceName} WHERE Id = @Id";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                using (var command = new SqlCommand(queryString, connection))
-                {
-                    command.Parameters.Add("@Id", typeToSqlDbType[typeof(TType)]);
-                    command.Parameters["@Id"].Value = id;
-                    connection.Open();
-                    using (var dataReader = command.ExecuteReader())
-                    {
+            var result = GetEntities(new TType[] { id }, sourceName);
 
-                        if (!dataReader.Read())
-                            throw new EntityNotFoundException($"Entity with id: \"{id}\" not found in table \"{sourceName}\"");
+            if (!result.Any())
+                throw new EntityNotFoundException($"Entity with id: \"{id}\" not found in table \"{sourceName}\"");
 
-                        result = MapRecordToModel(dataReader);
-                    }
-                }
-
-            }
-            return result;
+            return result.First();
         }
 
         public void UpdateEntity(TModel newEntity, string sourceName)
