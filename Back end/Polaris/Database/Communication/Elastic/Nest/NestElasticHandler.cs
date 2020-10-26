@@ -67,13 +67,21 @@ namespace Database.Communication.Elastic.Nest
         )
         {
             throw new System.NotImplementedException();
-            //if (pagination != null)
-            //{
-            //    var response = RetrieveQueryResponse(container, indexName, pagination);
-            //    ElasticResponseValidator.Validate(response);
-            //    return response.Documents;
-            //}
-            //return FetchAllByQuery(container, indexName);
+        }
+
+        protected IEnumerable<TModel> RetrieveQueryDocuments(
+            QueryContainer container,
+            string indexName,
+            Pagination pagination = null
+        )
+        {
+            if (pagination != null)
+            {
+                var response = RetrieveQueryResponse(container, indexName, pagination);
+                ElasticResponseValidator.Validate(response);
+                return response.Documents;
+            }
+            return FetchAllByQuery(container, indexName);
         }
 
 
