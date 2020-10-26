@@ -17,60 +17,63 @@ namespace Database.Communication.MicrosoftSqlServer
 
         public MSqlHandler()
         {
-            connectionString = MSqlClientFactory.GetInstance().GetClient();
+            connectionString = MSqlClientFactory.singletonInstance.GetClient();
             InitTypeToSqlDbType();
         }
 
         public void BulkInsert(IEnumerable<TModel> models, string sourceName)
         {
             CheckSource(sourceName);
-            DataTable dataTable = new DataTable();
-            var properties = models.First().GetType().GetProperties();
-
-            foreach (var property in properties)
-                dataTable.Columns.Add(new DataColumn(property.Name, property.PropertyType));
-
-            foreach (var model in models)
+            using (var dataTable = new DataTable())
             {
-                DataRow dataRow = dataTable.NewRow();
+                var properties = models.First().GetType().GetProperties();
 
                 foreach (var property in properties)
-                    dataRow[property.Name] = property.GetValue(model);
+                    dataTable.Columns.Add(new DataColumn(property.Name, property.PropertyType));
 
-                dataTable.Rows.Add(dataRow);
+                foreach (var model in models)
+                {
+                    var dataRow = dataTable.NewRow();
+
+                    foreach (var property in properties)
+                        dataRow[property.Name] = property.GetValue(model);
+
+                    dataTable.Rows.Add(dataRow);
+                }
+
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    using (var sqlBulk = new SqlBulkCopy(connection)
+                    {
+                        DestinationTableName = sourceName
+                    }){
+
+                        foreach (var property in properties)
+                            sqlBulk.ColumnMappings.Add(property.Name, property.Name);
+                        connection.Open();
+                        sqlBulk.WriteToServer(dataTable);
+                    }
+                }
             }
-
-            var connection = new SqlConnection(connectionString);
-            SqlBulkCopy sqlBulk = new SqlBulkCopy(connection)
-            {
-                DestinationTableName = sourceName
-            };
-
-            foreach (var property in properties)
-                sqlBulk.ColumnMappings.Add(property.Name, property.Name);
-
-            connection.Open();
-            sqlBulk.WriteToServer(dataTable);
-            dataTable.Dispose();
-            sqlBulk.Close();
-            connection.Close();
         }
 
         public IEnumerable<TModel> FetchAll(string sourceName)
         {
-            var queryString = $"SELECT * FROM {sourceName}";
-            var connection = new SqlConnection(connectionString);
-            connection.Open();
-            var command = new SqlCommand(queryString, connection);
-            var dataReader = command.ExecuteReader();
             var result = new List<TModel>();
+            var queryString = $"SELECT * FROM {sourceName}";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                using (var command = new SqlCommand(queryString, connection))
+                {
+                    using (var dataReader = command.ExecuteReader())
+                    {
 
-            while (dataReader.Read())
-                result.Add(MapRecordToModel(dataReader));
-
-            command.Dispose();
-            dataReader.Close();
-            connection.Close();
+                        while (dataReader.Read())
+                            result.Add(MapRecordToModel(dataReader));
+                    }
+                }
+            }
             return result;
         }
 

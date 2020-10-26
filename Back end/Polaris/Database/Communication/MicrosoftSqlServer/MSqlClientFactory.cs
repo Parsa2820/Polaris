@@ -2,16 +2,11 @@
 {
     public class MSqlClientFactory : IDatabaseClientFactory<string>
     {
-        private static MSqlClientFactory singletonInstance = new MSqlClientFactory();
+        public static MSqlClientFactory singletonInstance {get;} = new MSqlClientFactory();
         private string client = null;
 
         private MSqlClientFactory()
         {
-        }
-
-        public static MSqlClientFactory GetInstance()
-        {
-            return singletonInstance;
         }
 
         public void CreateInitialClient(string address)
