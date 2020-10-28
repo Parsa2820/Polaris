@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Models.Banking;
 using System;
+using System.Data.SqlClient;
 
 namespace API
 {
@@ -39,7 +40,7 @@ namespace API
             {
                 case "sql":
                     ConfigureSqlDependencies(services);
-                    MSqlClientFactory.GetInstance().CreateInitialClient(Configuration["SqlServerConnectionString"]);
+                    MSqlClientFactory.Instance.CreateInitialClient(Configuration["SqlServerConnectionString"]);
                     break;
 
                 default:

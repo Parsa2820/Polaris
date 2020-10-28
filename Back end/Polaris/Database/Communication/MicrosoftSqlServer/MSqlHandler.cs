@@ -26,63 +26,54 @@ namespace Database.Communication.MicrosoftSqlServer
 
         public void BulkInsert(IEnumerable<TModel> models, string sourceName)
         {
-            CheckSource(sourceName);
-            using (var dataTable = new DataTable())
+            CheckSource(sourceName, true);
+            using var dataTable = new DataTable();
+            var properties = models.First().GetType().GetProperties();
+
+            foreach (var property in properties)
+                dataTable.Columns.Add(new DataColumn(property.Name, property.PropertyType));
+
+            foreach (var model in models)
             {
-                var properties = models.First().GetType().GetProperties();
+                var dataRow = dataTable.NewRow();
 
                 foreach (var property in properties)
-                    dataTable.Columns.Add(new DataColumn(property.Name, property.PropertyType));
+                    dataRow[property.Name] = property.GetValue(model);
 
-                foreach (var model in models)
-                {
-                    var dataRow = dataTable.NewRow();
-
-                    foreach (var property in properties)
-                        dataRow[property.Name] = property.GetValue(model);
-
-                    dataTable.Rows.Add(dataRow);
-                }
-
-                using (var connection = new SqlConnection(connectionString))
-                {
-                    using (var sqlBulk = new SqlBulkCopy(connection)
-                    {
-                        DestinationTableName = sourceName
-                    }){
-
-                        foreach (var property in properties)
-                            sqlBulk.ColumnMappings.Add(property.Name, property.Name);
-                        connection.Open();
-                        sqlBulk.WriteToServer(dataTable);
-                    }
-                }
+                dataTable.Rows.Add(dataRow);
             }
+
+            using var connection = new SqlConnection(connectionString);
+            using var sqlBulk = new SqlBulkCopy(connection)
+            {
+                DestinationTableName = sourceName
+            };
+
+            foreach (var property in properties)
+                sqlBulk.ColumnMappings.Add(property.Name, property.Name);
+
+            connection.Open();
+            sqlBulk.WriteToServer(dataTable);
+            
         }
 
         public IEnumerable<TModel> FetchAll(string sourceName)
         {
             var queryString = $"SELECT {tableColumns} FROM {sourceName}";
-
-            using (var command = new SqlCommand(queryString))
-                return FetchByCommand(command);
+            using var command = new SqlCommand(queryString);
+            return FetchByCommand(command);
         }
 
         protected List<TModel> FetchByCommand(SqlCommand command)
         {
             var result = new List<TModel>();
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                command.Connection = connection;
-                connection.Open();
-
-                using (var dataReader = command.ExecuteReader())
-                {
-                    while (dataReader.Read())
-                        result.Add(MapRecordToModel(dataReader));
-                }
-            }
+            using var connection = new SqlConnection(connectionString);
+            command.Connection = connection;
+            connection.Open();
+            using var dataReader = command.ExecuteReader();
+              
+            while (dataReader.Read())
+                result.Add(MapRecordToModel(dataReader));
 
             return result;
         }
@@ -102,7 +93,7 @@ namespace Database.Communication.MicrosoftSqlServer
             {
                 if (recreate)
                 {
-                    // Todo : Create new table from TModel
+                    CreateNewTable(sourceName);
                 }
                 else
                     throw e;
@@ -117,13 +108,9 @@ namespace Database.Communication.MicrosoftSqlServer
             foreach (var property in properties)
                 columns.AppendLine($"{property.Name} {typeToSqlDbType[property.PropertyType]},");
 
-            using (var connection = new SqlConnection(connectionString))
-            {
-                using (var command = new SqlCommand($"CREATE TABLE {sourceName} ({columns})", connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand($"CREATE TABLE {sourceName} ({columns})", connection);
+            command.ExecuteNonQuery();
         }
 
         public IEnumerable<TModel> RetrieveQueryDocumentsByFilter(string[] container, string indexName, Pagination pagination = null)
@@ -137,9 +124,7 @@ namespace Database.Communication.MicrosoftSqlServer
             var properties = result.GetType().GetProperties();
 
             foreach (var propery in properties)
-            {
                 propery.SetValue(result, record.GetValue(record.GetOrdinal(propery.Name)));
-            }
 
             return result;
         }
@@ -155,19 +140,6 @@ namespace Database.Communication.MicrosoftSqlServer
             };
         }
 
-        private void InitTableColumns()
-        {
-            var properties = typeof(TModel).GetProperties();
-            var result = new StringBuilder();
-
-            foreach (var property in properties)
-            {
-                result.Append(property.Name);
-                result.Append(", ");
-            }
-
-            result.Length -= 2; // To remove redundant ', ' at the end of result
-            tableColumns = result.ToString();
-        }
+        private void InitTableColumns() => tableColumns = string.Join(", ", typeof(TModel).GetProperties().Select(x => x.Name));
     }
 }
