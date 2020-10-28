@@ -105,12 +105,13 @@ namespace Database.Communication.MicrosoftSqlServer
             foreach (var property in properties)
                 columns.AppendLine($"{property.Name} {typeToSqlDbType[property.PropertyType]},");
 
-            var connection = new SqlConnection(connectionString);
-            var command = new SqlCommand($"CREATE TABLE {sourceName} ({columns})", connection);
-            connection.Open();
-            command.ExecuteNonQuery();
-            command.Dispose();
-            connection.Close();
+            using (var connection = new SqlConnection(connectionString))
+            {
+                using (var command = new SqlCommand($"CREATE TABLE {sourceName} ({columns})", connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
         }
 
         public IEnumerable<TModel> RetrieveQueryDocumentsByFilter(string[] container, string indexName, Pagination pagination = null)

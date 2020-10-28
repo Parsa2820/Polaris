@@ -16,6 +16,7 @@ namespace Database.Validation.MicrosoftSqlServer
             connection.Open();
             try
             {
+<<<<<<< Updated upstream
                 var command = new SqlCommand(queryString, connection);
                 command.ExecuteReader();
                 return;
@@ -23,6 +24,20 @@ namespace Database.Validation.MicrosoftSqlServer
             catch (Exception)
             {
                 throw new InvalidSqlTableException($"\"{sourceName}\" table does not exist");
+=======
+                connection.Open();
+                try
+                {
+                    using (var command = new SqlCommand(queryString, connection))
+                    {
+                        command.ExecuteReader();
+                    }
+                }
+                catch (Exception)
+                {
+                    throw new InvalidSqlTableException($"\"{sourceName}\" table does not exist");
+                }
+>>>>>>> Stashed changes
             }
         }
     }
