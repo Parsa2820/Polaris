@@ -91,7 +91,7 @@ namespace Database.Filtering.Criteria.SQLCriteria
         //TODO: avoid using * in select query and try to use explicit column names;
         private static string BuildSqlQueryString(string field, string value, string operation)
         {
-            return $"select * from {table} where {field} {operation} {value}";
+            return $"{field} {operation} {value}";
         }
         public override string Interpret()
         {

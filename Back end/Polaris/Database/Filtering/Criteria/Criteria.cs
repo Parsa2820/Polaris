@@ -10,7 +10,7 @@ namespace Database.Filtering.Criteria
 {
     public abstract class Criteria<TQueryContainer> : IDbInterpretable<TQueryContainer>
     {
-        protected Criteria(string field, string @operator, string value)
+        public Criteria(string field, string @operator, string value)
         {
             Field = field;
             Operator = @operator;
