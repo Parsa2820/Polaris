@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Models;
 using Models.Network;
 using Models.Response;
-using Nest;
 using System.Collections.Generic;
 using System.Linq;
 
