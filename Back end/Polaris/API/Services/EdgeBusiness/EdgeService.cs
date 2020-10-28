@@ -63,13 +63,6 @@ namespace API.Services.EdgeBusiness
             return output;
         }
 
-        private Dictionary<string, string> GetModelMapping()
-        {
-            return new Dictionary<string, string>{{"id", "text"}, {"source", "text"}, {"target", "text"},
-                {"amount", "numeric"}, {"date", "numeric"}, {"time", "numeric"},
-                {"trackingId", "numeric"}, {"type", "text"}};
-        }
-
         public IEnumerable<Edge<TDataModel, TTypeDataId, TTypeSideId>> GetEdgesBySideId(
             TTypeSideId id,
             string[] filter = null,

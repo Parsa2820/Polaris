@@ -1,4 +1,5 @@
 ﻿using Database.Exceptions.MicrosoftSqlServer;
+using Database.Filtering.Filter;
 using Database.Validation.MicrosoftSqlServer;
 using Models.Response;
 using System;
@@ -16,12 +17,14 @@ namespace Database.Communication.MicrosoftSqlServer
         protected static Dictionary<Type, SqlDbType> typeToSqlDbType;
         protected static string tableColumns;
         protected string connectionString;
+        private static Dictionary<string, string> modelFilterMapping;
 
         public MSqlHandler()
         {
             connectionString = MSqlClientFactory.Instance.GetClient();
             InitTypeToSqlDbType();
             InitTableColumns();
+            InitModelFilterMapping();
         }
 
         public void BulkInsert(IEnumerable<TModel> models, string sourceName)
@@ -113,9 +116,10 @@ namespace Database.Communication.MicrosoftSqlServer
             command.ExecuteNonQuery();
         }
 
-        public IEnumerable<TModel> RetrieveQueryDocumentsByFilter(string[] container, string indexName, Pagination pagination = null)
+        public IEnumerable<TModel> RetrieveQueryDocumentsByFilter(string[] container, string sourceName, Pagination pagination = null)
         {
-            throw new NotImplementedException();
+            var commandString = new SqlServerFilter(container, modelFilterMapping, sourceName, tableColumns).Interpret();
+            return FetchByCommand(new SqlCommand(commandString));
         }
 
         protected TModel MapRecordToModel(IDataRecord record)
@@ -141,5 +145,22 @@ namespace Database.Communication.MicrosoftSqlServer
         }
 
         private void InitTableColumns() => tableColumns = string.Join(", ", typeof(TModel).GetProperties().Select(x => x.Name));
+
+        private void InitModelFilterMapping()
+        {
+            var properties = typeof(TModel).GetProperties();
+            modelFilterMapping = new Dictionary<string, string>();
+
+            foreach (var property in properties)
+                modelFilterMapping.Add(property.Name, GetFilterType(property.GetType()));
+        }
+
+        private string GetFilterType(Type type)
+        {
+            if (type == typeof(int) || type == typeof(long) || type == typeof(short))
+                return "numeric";
+            else
+                return "text";
+        }
     }
 }

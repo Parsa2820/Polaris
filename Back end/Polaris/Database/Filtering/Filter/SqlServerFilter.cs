@@ -8,8 +8,15 @@ namespace Database.Filtering.Filter
 {
     public class SqlServerFilter : Filter<string>
     {
-        public SqlServerFilter(string[] filterQueries, Dictionary<string, string> mapping) : base(filterQueries, mapping) { }
-        private string table = "";
+        private readonly string tableName;
+        private readonly string columns;
+
+        public SqlServerFilter(string[] filterQueries, Dictionary<string, string> mapping, string tableName, string columns) : base(filterQueries, mapping)
+        {
+            this.tableName = tableName;
+            this.columns = columns;
+        }
+
         public override string Interpret()
         {
             var queries = new StringBuilder();
@@ -21,7 +28,7 @@ namespace Database.Filtering.Filter
                 queries.Append(criterias[0]);
                 this.criterias.GetRange(1, criterias.Count - 1).ForEach(str => { queries.Append(andString); queries.Append(str); });
             }
-            return $"select * from {table} {queries.ToString()}";
+            return $"select {columns} from {tableName} {queries}";
         }
 
         protected override void BuildCriterias(string[] filterQueries)
