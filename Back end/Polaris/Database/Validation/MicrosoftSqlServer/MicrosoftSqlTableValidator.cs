@@ -14,13 +14,19 @@ namespace Database.Validation.MicrosoftSqlServer
 
             using (var connection = new SqlConnection(connectionString))
             {
+                var command = new SqlCommand(queryString, connection);
+                command.ExecuteReader();
+                return;
+            }
+            catch (Exception)
+            {
+                throw new InvalidSqlTableException($"\"{sourceName}\" table does not exist");
                 connection.Open();
                 try
                 {
                     using (var command = new SqlCommand(queryString, connection))
                     {
                         command.ExecuteReader();
-                        return;
                     }
                 }
                 catch (Exception)

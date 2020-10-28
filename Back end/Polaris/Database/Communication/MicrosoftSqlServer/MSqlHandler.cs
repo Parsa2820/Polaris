@@ -109,6 +109,23 @@ namespace Database.Communication.MicrosoftSqlServer
             }
         }
 
+        private void CreateNewTable(string sourceName)
+        {
+            var properties = typeof(TModel).GetProperties();
+            var columns = new StringBuilder();
+
+            foreach (var property in properties)
+                columns.AppendLine($"{property.Name} {typeToSqlDbType[property.PropertyType]},");
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                using (var command = new SqlCommand($"CREATE TABLE {sourceName} ({columns})", connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
         public IEnumerable<TModel> RetrieveQueryDocumentsByFilter(string[] container, string indexName, Pagination pagination = null)
         {
             throw new NotImplementedException();
