@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 namespace Database.Filtering.Criteria
 {
     using OperatorToFunctionDict = Dictionary<string, Func<TextNestCriteria, string, string, QueryContainer>>;
-    public class TextNestCriteria : NestCriteria
+    public class TextNestCriteria : Criteria<QueryContainer>
     {
         private static OperatorToFunctionDict registry = GetRegistry<TextNestCriteria>();
         protected static readonly Regex ValuePattern = new Regex(
@@ -23,7 +23,7 @@ namespace Database.Filtering.Criteria
                 throw new InvalidNestFilterException($"\"{value}\" is invalid for TextCriteria");
         }
 
-        [NestOperator("eq")]
+        [FilterOperator("eq")]
         public static QueryContainer Equal(string field, string value)
         {
             return new MatchQuery
@@ -33,7 +33,7 @@ namespace Database.Filtering.Criteria
             };
         }
 
-        [NestOperator("nq")]
+        [FilterOperator("nq")]
         public static QueryContainer NotEqual(string field, string value)
         {
             return new BoolQuery
@@ -42,7 +42,7 @@ namespace Database.Filtering.Criteria
             };
         }
 
-        [NestOperator("sw")]
+        [FilterOperator("sw")]
         public static QueryContainer StartsWith(string field, string value)
         {
             return new PrefixQuery
@@ -52,7 +52,7 @@ namespace Database.Filtering.Criteria
             };
         }
 
-        [NestOperator("ew")]
+        [FilterOperator("ew")]
         public static QueryContainer EndsWith(string field, string value)
         {
             return new RegexpQuery
@@ -62,7 +62,7 @@ namespace Database.Filtering.Criteria
             };
         }
 
-        [NestOperator("cnt")]
+        [FilterOperator("cnt")]
         public static QueryContainer Contains(string field, string value)
         {
             return new RegexpQuery
@@ -72,7 +72,7 @@ namespace Database.Filtering.Criteria
             };
         }
 
-        [NestOperator("gt")]
+        [FilterOperator("gt")]
         public static QueryContainer GreaterThan(string field, string value)
         {
             return new ScriptQuery
@@ -87,7 +87,7 @@ namespace Database.Filtering.Criteria
             };
         }
 
-        [NestOperator("gte")]
+        [FilterOperator("gte")]
         public static QueryContainer GreaterThanOrEqual(string field, string value)
         {
             return new ScriptQuery
@@ -102,7 +102,7 @@ namespace Database.Filtering.Criteria
             };
         }
 
-        [NestOperator("lt")]
+        [FilterOperator("lt")]
         public static QueryContainer LessThan(string field, string value)
         {
             return new ScriptQuery
@@ -117,7 +117,7 @@ namespace Database.Filtering.Criteria
             };
         }
 
-        [NestOperator("lte")]
+        [FilterOperator("lte")]
         public static QueryContainer LessThanOrEqual(string field, string value)
         {
             return new ScriptQuery

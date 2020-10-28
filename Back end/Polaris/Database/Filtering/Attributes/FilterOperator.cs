@@ -1,8 +1,8 @@
 namespace Database.Filtering.Attributes
 {
-    public class NestOperator : System.Attribute
+    public class FilterOperator : System.Attribute
     {
-        public NestOperator(string abbrv)
+        public FilterOperator(string abbrv)
         {
             Abbrv = abbrv;
         }
