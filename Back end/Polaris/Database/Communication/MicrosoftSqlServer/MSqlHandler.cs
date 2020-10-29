@@ -162,7 +162,7 @@ namespace Database.Communication.MicrosoftSqlServer
             modelFilterMapping = new Dictionary<string, string>();
 
             foreach (var property in properties)
-                modelFilterMapping.Add(property.Name, GetFilterType(property.GetType()));
+                modelFilterMapping.Add(property.Name.ToLower(), GetFilterType(property.GetType()));
         }
 
         private string GetFilterType(Type type)

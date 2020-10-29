@@ -44,7 +44,7 @@ namespace Database.Filtering
             string @operator;
             string value;
 
-            switch (mapping[selectedField])
+            switch (mapping[selectedField.ToLower()])
             {
                 case "text":
                     @operator = match.Groups["operator"].Value;

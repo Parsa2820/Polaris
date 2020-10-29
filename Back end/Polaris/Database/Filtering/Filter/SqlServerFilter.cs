@@ -19,12 +19,12 @@ namespace Database.Filtering.Filter
         {
             var queries = new StringBuilder();
             var andString = "AND";
-            var whereString = "WHERE";
+            var whereString = "WHERE ";
             if (criterias.Count != 0)
             {
                 queries.Append(whereString);
-                queries.Append(criterias[0]);
-                this.criterias.GetRange(1, criterias.Count - 1).ForEach(str => { queries.Append(andString); queries.Append(str); });
+                queries.Append(criterias[0].Interpret());
+                this.criterias.GetRange(1, criterias.Count - 1).ForEach(crt => { queries.Append(andString); queries.Append(crt.Interpret()); });
             }
             return $"select {columns} from {tableName} {queries}";
         }
