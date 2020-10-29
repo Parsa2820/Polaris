@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Database.Filtering.Criteria.SQLCriteria;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Database.Filtering.Filter
 {

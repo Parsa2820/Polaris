@@ -1,5 +1,4 @@
 using Database.Filtering.Attributes;
-using Nest;
 using System;
 using System.Collections.Generic;
 using System.Linq;

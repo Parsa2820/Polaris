@@ -1,5 +1,4 @@
 using Database.Communication;
-using Database.Filtering;
 using Microsoft.Extensions.Configuration;
 using Models;
 using Models.Network;

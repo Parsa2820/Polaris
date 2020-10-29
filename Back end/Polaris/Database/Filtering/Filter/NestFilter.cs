@@ -1,9 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Database.Exceptions.Elastic;
 using Database.Filtering.Criteria;
 using Nest;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Database.Filtering.Filter
 {

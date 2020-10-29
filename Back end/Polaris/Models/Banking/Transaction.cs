@@ -1,5 +1,3 @@
-using System;
-
 namespace Models.Banking
 {
     public class Transaction : AmountedEntity<string, string>

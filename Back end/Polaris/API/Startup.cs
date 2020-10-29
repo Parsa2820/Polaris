@@ -7,13 +7,10 @@ using Database.Communication.Elastic.Nest;
 using Database.Communication.MicrosoftSqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Models.Banking;
-using System;
-using System.Data.SqlClient;
 
 namespace API
 {

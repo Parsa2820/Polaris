@@ -1,8 +1,8 @@
+using Database.Exceptions.Elastic;
+using Database.Filtering.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Database.Exceptions.Elastic;
-using Database.Filtering.Attributes;
 
 namespace Database.Filtering.Criteria.SQLCriteria
 {

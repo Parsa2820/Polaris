@@ -18,6 +18,7 @@ namespace Database.Communication.MicrosoftSqlServer
         protected static string tableColumns;
         protected string connectionString;
         private static Dictionary<string, string> modelFilterMapping;
+        private const int MaxLenghtDbArray = -1;
 
         public MSqlHandler()
         {
@@ -57,7 +58,7 @@ namespace Database.Communication.MicrosoftSqlServer
 
             connection.Open();
             sqlBulk.WriteToServer(dataTable);
-            
+
         }
 
         public IEnumerable<TModel> FetchAll(string sourceName)
@@ -74,7 +75,7 @@ namespace Database.Communication.MicrosoftSqlServer
             command.Connection = connection;
             connection.Open();
             using var dataReader = command.ExecuteReader();
-              
+
             while (dataReader.Read())
                 result.Add(MapRecordToModel(dataReader));
 
@@ -109,16 +110,25 @@ namespace Database.Communication.MicrosoftSqlServer
             var columns = new StringBuilder();
 
             foreach (var property in properties)
-                columns.AppendLine($"{property.Name} {typeToSqlDbType[property.PropertyType]},");
+            {
+                columns.Append($"{property.Name} {typeToSqlDbType[property.PropertyType]}");
+
+                if (typeToSqlDbType[property.PropertyType] == SqlDbType.NVarChar)
+                    columns.Append("(" + (MaxLenghtDbArray == -1 ? "MAX" : MaxLenghtDbArray.ToString()) + ")");
+
+                columns.AppendLine(", ");
+            }
 
             using var connection = new SqlConnection(connectionString);
             using var command = new SqlCommand($"CREATE TABLE {sourceName} ({columns})", connection);
+            connection.Open();
             command.ExecuteNonQuery();
         }
 
         public IEnumerable<TModel> RetrieveQueryDocumentsByFilter(string[] container, string sourceName, Pagination pagination = null)
         {
             var commandString = new SqlServerFilter(container, modelFilterMapping, sourceName, tableColumns).Interpret();
+            Console.WriteLine(commandString);
             return FetchByCommand(new SqlCommand(commandString));
         }
 
@@ -140,7 +150,7 @@ namespace Database.Communication.MicrosoftSqlServer
                 { typeof(long), SqlDbType.BigInt }, // This is also Int64
                 { typeof(int), SqlDbType.Int }, // This is also Int32
                 { typeof(short), SqlDbType.SmallInt }, // This is also Int16
-                { typeof(string), SqlDbType.VarChar }
+                { typeof(string), SqlDbType.NVarChar }
             };
         }
 

@@ -30,7 +30,8 @@ namespace Database.Communication.MicrosoftSqlServer
             for (int i = 0; i < idsList.Count(); i++)
             {
                 parameters[i] = $"@Id{i + 1}";
-                command.Parameters.AddWithValue(parameters[i], idsList[i]);
+                command.Parameters.Add(parameters[i], typeToSqlDbType[typeof(TType)]);
+                command.Parameters[parameters[i]].Value = idsList[i];
             }
 
             command.CommandText = $"SELECT {tableColumns} FROM {sourceName} WHERE Id IN ({string.Join(", ", parameters)})";
