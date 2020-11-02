@@ -1,8 +1,10 @@
 using Database.Exceptions.Elastic;
+using Database.Filtering.Filter;
 using Database.Validation.Elastic;
 using Models;
 using Models.Response;
 using Nest;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -12,6 +14,7 @@ namespace Database.Communication.Elastic.Nest
     public class NestElasticHandler<TModel> : IDatabaseHandler<TModel> where TModel : class, IModel
     {
         protected IElasticClient elasticClient;
+        private static Dictionary<string, string> modelFilterMapping;
 
         public NestElasticHandler()
         {
@@ -66,7 +69,7 @@ namespace Database.Communication.Elastic.Nest
             Pagination pagination = null
         )
         {
-            throw new System.NotImplementedException();
+            return RetrieveQueryDocuments(new NestFilter(filter, modelFilterMapping).Interpret(), indexName, pagination);
         }
 
         protected IEnumerable<TModel> RetrieveQueryDocuments(
@@ -185,6 +188,23 @@ namespace Database.Communication.Elastic.Nest
             }
             elasticClient.ClearScroll(new ClearScrollRequest(scrollId));
             return new ReadOnlyCollection<IHit<TModel>>(result);
+        }
+
+        private void InitModelFilterMapping()
+        {
+            var properties = typeof(TModel).GetProperties();
+            modelFilterMapping = new Dictionary<string, string>();
+
+            foreach (var property in properties)
+                modelFilterMapping.Add(property.Name.ToLower(), GetFilterType(property.PropertyType));
+        }
+
+        private string GetFilterType(Type type)
+        {
+            if (type.Equals(typeof(int)) || type.Equals(typeof(long)) || type.Equals(typeof(short)))
+                return "numeric";
+            else
+                return "text";
         }
     }
 }

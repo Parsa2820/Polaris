@@ -18,8 +18,8 @@ namespace Database.Filtering.Filter
         public override string Interpret()
         {
             var queries = new StringBuilder();
-            var andString = "AND";
-            var whereString = "WHERE ";
+            var andString = " AND ";
+            var whereString = " WHERE ";
             if (criterias.Count != 0)
             {
                 queries.Append(whereString);

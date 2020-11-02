@@ -96,12 +96,14 @@ namespace Database.Filtering.Criteria.SQLCriteria
                 return "";
 
             var builder = new StringBuilder();
+            builder.Append(" (");
             builder.Append($"{field} {operation} N'{splittedValue[0]}'");
             for (int i = 1; i < splittedValue.Length; i++)
             {
-                builder.Append("or");
+                builder.Append(" or ");
                 builder.Append($"{field} {operation} N'{splittedValue[i]}'");
             }
+            builder.Append(") ");
             return builder.ToString();
         }
         public override string Interpret()

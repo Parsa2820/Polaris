@@ -162,12 +162,12 @@ namespace Database.Communication.MicrosoftSqlServer
             modelFilterMapping = new Dictionary<string, string>();
 
             foreach (var property in properties)
-                modelFilterMapping.Add(property.Name.ToLower(), GetFilterType(property.GetType()));
+                modelFilterMapping.Add(property.Name.ToLower(), GetFilterType(property.PropertyType));
         }
 
         private string GetFilterType(Type type)
         {
-            if (type == typeof(int) || type == typeof(long) || type == typeof(short))
+            if (type.Equals(typeof(int)) || type.Equals(typeof(long)) || type.Equals(typeof(short)))
                 return "numeric";
             else
                 return "text";
