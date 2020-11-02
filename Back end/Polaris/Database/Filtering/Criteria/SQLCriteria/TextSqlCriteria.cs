@@ -2,6 +2,7 @@ using Database.Exceptions.Elastic;
 using Database.Filtering.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Database.Filtering.Criteria.SQLCriteria
@@ -88,10 +89,20 @@ namespace Database.Filtering.Criteria.SQLCriteria
             return BuildSqlQueryString(field, value, "<=");
         }
 
-        //TODO: avoid using * in select query and try to use explicit column names;
         private static string BuildSqlQueryString(string field, string value, string operation)
         {
-            return $"{field} {operation} N'{value}'";
+             var splittedValue = value.Split(new Char[] { ' ' });
+            if (splittedValue.Length == 0)
+                return "";
+
+            var builder = new StringBuilder();
+            builder.Append($"{field} {operation} N'{splittedValue[0]}'");
+            for (int i = 1; i < splittedValue.Length; i++)
+            {
+                builder.Append("or");
+                builder.Append($"{field} {operation} N'{splittedValue[i]}'");
+            }
+            return builder.ToString();
         }
         public override string Interpret()
         {
