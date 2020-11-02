@@ -16,7 +16,6 @@ namespace Database.Filtering.Criteria.SQLCriteria
             @"^[+-]?([1-9][0-9]*(\.[0-9]+)?)|(0\.[0-9]+)$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase
         );
-        private static string baseQuery = "select * where {0} {1} {2}";
 
         public NumericSqlCriteria(string field, string @operator, string value) : base(field, @operator, value)
         {
@@ -73,11 +72,11 @@ namespace Database.Filtering.Criteria.SQLCriteria
                 return "";
 
             var builder = new StringBuilder();
-            builder.Append($"{field} {operation} {splittedValue[0]}");
+            builder.Append($"{field} {operation} {splittedValue[0]} ");
             for (int i = 1; i < splittedValue.Length; i++)
             {
                 builder.Append("or");
-                builder.Append($"{field} {operation} {splittedValue[i]}");
+                builder.Append($"{field} {operation} {splittedValue[i]} ");
             }
             return builder.ToString();
         }

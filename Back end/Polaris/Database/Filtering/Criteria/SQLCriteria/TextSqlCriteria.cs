@@ -96,11 +96,11 @@ namespace Database.Filtering.Criteria.SQLCriteria
                 return "";
 
             var builder = new StringBuilder();
-            builder.Append($"{field} {operation} N'{splittedValue[0]}'");
+            builder.Append($"{field} {operation} N'{splittedValue[0]}' ");
             for (int i = 1; i < splittedValue.Length; i++)
             {
                 builder.Append("or");
-                builder.Append($"{field} {operation} N'{splittedValue[i]}'");
+                builder.Append($"{field} {operation} N'{splittedValue[i]}' ");
             }
             return builder.ToString();
         }
