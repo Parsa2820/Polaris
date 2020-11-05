@@ -1,5 +1,5 @@
 using API.Services.NodeBusiness;
-using Elastic.Exceptions;
+using Database.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 using Models.Banking;
@@ -63,6 +63,7 @@ namespace API.Controllers.V1
         {
             if (pagination != null && pagination.PageIndex == 0 && pagination.PageSize == 0)
                 return Ok(_nodeService.GetNodesByFilter(filter, null));
+
             return Ok(_nodeService.GetNodesByFilter(filter, pagination));
         }
 

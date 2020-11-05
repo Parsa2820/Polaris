@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Database\Database.csproj" />
     <ProjectReference Include="..\Models\Models.csproj" />
-    <ProjectReference Include="..\Elastic\Elastic.csproj" />
     <ProjectReference Include="..\Analysis\Analysis.csproj" />
   </ItemGroup>
 

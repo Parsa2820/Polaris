@@ -1,14 +1,15 @@
-using API.Services.Utils;
+﻿using API.Services.Utils;
 using Database.Communication;
 using Models;
 
 namespace API.Services.Importer
 {
-    public class ElasticImporterService<TModel> : IImporterService<TModel> where TModel : class, IModel
+    public class SqlServerImporterService<TModel> : IImporterService<TModel>
+        where TModel : class, IModel
     {
         private readonly IDatabaseHandler<TModel> _handler;
 
-        public ElasticImporterService(IDatabaseHandler<TModel> handler)
+        public SqlServerImporterService(IDatabaseHandler<TModel> handler)
         {
             _handler = handler;
         }

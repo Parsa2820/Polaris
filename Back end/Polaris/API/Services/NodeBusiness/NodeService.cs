@@ -1,6 +1,4 @@
-using Elastic.Communication;
-using Elastic.Communication.Nest;
-using Elastic.Filtering;
+using Database.Communication;
 using Microsoft.Extensions.Configuration;
 using Models;
 using Models.Network;
@@ -54,8 +52,8 @@ namespace API.Services.NodeBusiness
             Pagination pagination = null
         )
         {
-            var data = ((NestEntityHandler<TDataModel, TTypeDataId>)_handler).RetrieveQueryDocuments(
-                new NestFilter(filter, GetModelMapping()).Interpret(),
+            var data = _handler.RetrieveQueryDocumentsByFilter(
+                filter,
                 _nodeElasticIndexName,
                 pagination
             );
