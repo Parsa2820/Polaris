@@ -16,8 +16,6 @@ namespace Database.Filtering.Criteria.SQLCriteria
             @"^\S+$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase
         );
-
-        private static readonly string table = "";
         private static readonly string likeQuery = "LIKE";
 
         public TextSqlCriteria(string field, string @operator, string value) : base(field, @operator, value)
@@ -91,7 +89,7 @@ namespace Database.Filtering.Criteria.SQLCriteria
 
         private static string BuildSqlQueryString(string field, string value, string operation)
         {
-             var splittedValue = value.Split(new Char[] { ' ' });
+            var splittedValue = value.Split(new Char[] { ' ' });
             if (splittedValue.Length == 0)
                 return "";
 
@@ -106,6 +104,7 @@ namespace Database.Filtering.Criteria.SQLCriteria
             builder.Append(") ");
             return builder.ToString();
         }
+
         public override string Interpret()
         {
             if (!registry.ContainsKey(Operator))

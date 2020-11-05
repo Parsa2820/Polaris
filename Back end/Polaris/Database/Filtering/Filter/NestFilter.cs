@@ -14,9 +14,9 @@ namespace Database.Filtering.Filter
 
         public override QueryContainer Interpret()
         {
-            return (QueryContainer)new BoolQuery
+            return new BoolQuery
             {
-                Must = this.criterias.Select(criteria => criteria.Interpret()).ToList()
+                Must = criterias.Select(criteria => criteria.Interpret()).ToList()
             };
         }
 
@@ -28,7 +28,5 @@ namespace Database.Filtering.Filter
                 (q, o, v) => new TextNestCriteria(q, o, v),
                 (q, o, v) => new NumericNestCriteria(q, o, v)));
         }
-
-
     }
 }

@@ -16,7 +16,6 @@ namespace Database.Filtering.Criteria.SQLCriteria
             @"^[+-]?([1-9][0-9]*(\.[0-9]+)?)|(0\.[0-9]+)$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase
         );
-        private static string baseQuery = "select * where {0} {1} {2}";
 
         public NumericSqlCriteria(string field, string @operator, string value) : base(field, @operator, value)
         {
@@ -68,7 +67,7 @@ namespace Database.Filtering.Criteria.SQLCriteria
 
         private static string BuildSqlQueryString(string field, string value, string operation)
         {
-            var splittedValue = value.Split(new Char[] { ' ' });
+            var splittedValue = value.Split(new char[] { ' ' });
             if (splittedValue.Length == 0)
                 return "";
 
@@ -83,12 +82,12 @@ namespace Database.Filtering.Criteria.SQLCriteria
             builder.Append(") ");
             return builder.ToString();
         }
+
         public override string Interpret()
         {
             if (!registry.ContainsKey(Operator))
                 throw new InvalidNestFilterException($"Operator: \"{Operator}\" is not registered in NumericCriteria");
             return registry[Operator].Invoke(null, Field, Value);
         }
-
     }
 }

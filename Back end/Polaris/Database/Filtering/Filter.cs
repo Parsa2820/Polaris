@@ -25,12 +25,7 @@ namespace Database.Filtering
 
         public abstract TQueryContainer Interpret();
 
-
         protected abstract void BuildCriterias(string[] filterQueries);
-        // {
-        //     foreach (var query in filterQueries)
-        //         criterias.Add(BuildCriteria(query));
-        // }
 
         protected Criteria<TQueryContainer> BuildCriteria<TTextCriteria, TNumericCriteria>(
             string filterQuery,
